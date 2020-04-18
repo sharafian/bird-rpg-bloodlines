@@ -38,7 +38,7 @@ export class Npc {
       })
     })
     this.sprite.anims.play(`${this.asset}-stand`)
-    this.sprite.setCollideWorldBounds(true)
+    // this.sprite.setCollideWorldBounds(true)
     this.sprite.setDebug(true, true, 0x00ff00)
 
     const hearticles = this.scene.add.particles('heart')

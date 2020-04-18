@@ -1,13 +1,26 @@
 import Phaser from 'phaser'
 
 import { GameScene } from './GameScene'
-import { MainMenu } from './MainMenu'
 import { AboutMenu } from './AboutMenu'
+import { MainMenu } from './MainMenu'
+
+const ZOOM = 1
 
 const config = {
   type: Phaser.AUTO,
-  width: 800,
-  height: 600,
+  pixelArt: true,
+  
+  scale: {
+    mode: Phaser.Scale.FIT,
+    autoCenter: Phaser.Scale.CENTER_BOTH,
+    width: 640,
+    height: 480,
+    zoom: ZOOM,
+    max: {
+      width: 640,
+      height: 480
+    }
+  },
   physics: {
     default: 'arcade',
     arcade: {
@@ -15,11 +28,7 @@ const config = {
       debug: false
     }
   },
-  scene: [
-    MainMenu,
-    AboutMenu,
-    GameScene
-  ]
+  scene: [ MainMenu, GameScene, AboutMenu ]
 }
 
 const game = new Phaser.Game(config)
