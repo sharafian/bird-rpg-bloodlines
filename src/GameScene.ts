@@ -39,7 +39,7 @@ export class GameScene extends Phaser.Scene {
       frameRate: 0,
       frames: this.anims.generateFrameNumbers('birb', {
         start: 2,
-        end: 2
+        end: 1
       })
     })
 
