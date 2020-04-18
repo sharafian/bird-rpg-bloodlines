@@ -11,7 +11,7 @@ const config = {
   pixelArt: true,
   
   scale: {
-    mode: Phaser.Scale.FIT,
+    mode: Phaser.Scale.NONE,
     autoCenter: Phaser.Scale.CENTER_BOTH,
     width: 640,
     height: 480,
