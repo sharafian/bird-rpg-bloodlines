@@ -1,6 +1,6 @@
 import Phaser from 'phaser'
 import { BIRD_SIZE } from '../GameScene'
-import { EventEmitter } from 'events' 
+import { EventEmitter } from 'events'
 
 export class Player extends EventEmitter {
   private sprite?: Phaser.Physics.Arcade.Sprite
@@ -205,7 +205,7 @@ export class Player extends EventEmitter {
     if (!this.sprite) { 
       throw new Error("Player object has no sprite.") 
     } else {
-    return this.sprite
+      return this.sprite
     }
   }
 } 
