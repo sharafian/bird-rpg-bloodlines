@@ -7,11 +7,13 @@
   "scripts": {
     "build": "webpack",
     "start": "http-server",
-    "watch": "http-server & webpack --watch",
+    "serve": "live-server --watch='./dist','./assets' & webpack",
     "lint": "tslint --project ."
   },
   "devDependencies": {
+    "@types/node": "^13.13.0",
     "http-server": "^0.12.1",
+    "live-server": "^1.2.1",
     "nodemon": "^2.0.3",
     "source-map-loader": "^0.2.4",
     "ts-loader": "^6.2.2",
