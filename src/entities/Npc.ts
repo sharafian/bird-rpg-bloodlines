@@ -6,7 +6,10 @@ export default class Npc {
   private y: number
   private asset: string
   private sprite?: Phaser.Physics.Arcade.Sprite
+  private heartEmitter?: Phaser.GameObjects.Particles.ParticleEmitter
+
   private facing = -1
+  private lovin = false
 
   constructor (scene: GameScene, x: number, y: number, asset: string) {
     this.scene = scene
@@ -16,6 +19,8 @@ export default class Npc {
   }
 
   preload () {
+    // TODO: will this load the heart several times?
+    this.scene.load.image('heart', 'assets/particles/heart.png')
     this.scene.load.spritesheet(`${this.asset}-npc`, this.asset, {
       frameWidth: BIRD_SIZE,
       frameHeight: BIRD_SIZE
@@ -34,10 +39,45 @@ export default class Npc {
     })
     this.sprite.anims.play(`${this.asset}-stand`)
     this.sprite.setCollideWorldBounds(true)
+
+    const hearticles = this.scene.add.particles('heart')
+    this.heartEmitter = hearticles.createEmitter({
+      lifespan: 400,
+      speed: { min: 100, max: 200 },
+      angle: { min: 180, max: 360 },
+      radial: true,
+      gravityY: 100,
+      frequency: 150,
+      quantity: 2
+    })
+  }
+
+  startLovin () {
+    this.lovin = true
+    if (!this.heartEmitter || !this.sprite) {
+      console.log('no emitter')
+      return
+    }
+
+    this.heartEmitter.start()
+    this.heartEmitter.setPosition(
+      this.sprite.x + BIRD_SIZE / 2,
+      this.sprite.y + BIRD_SIZE / 2)
+  }
+
+  stopLovin () {
+    this.lovin = false
+    this.heartEmitter?.stop()
   }
 
   update () {
     if (!this.sprite) {
+      return
+    }
+
+    // Don't move while you're gettin it on
+    if (this.lovin) {
+      this.sprite.setVelocityX(0)
       return
     }
 
@@ -54,5 +94,16 @@ export default class Npc {
     }
 
     this.sprite.setFlipX(this.facing > 0)
+  }
+
+  getPosition (): Phaser.Types.Math.Vector2Like {
+    if (!this.sprite) {
+      throw new Error('sprite does not exist')
+    }
+
+    return {
+      x: this.sprite.x,
+      y: this.sprite.y
+    }
   }
 }

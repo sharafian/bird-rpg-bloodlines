@@ -2,6 +2,7 @@ import Phaser from 'phaser'
 import Npc from './entities/Npc'
 
 export const BIRD_SIZE = 50
+export const MATING_RANGE = 150
 
 export class GameScene extends Phaser.Scene {
   private cursors?: Phaser.Types.Input.Keyboard.CursorKeys
@@ -10,6 +11,7 @@ export class GameScene extends Phaser.Scene {
     new Npc(this, 50, 50, 'assets/bluebird.png'),
     new Npc(this, 100, 50, 'assets/redbird.png'),
   ]
+  private mate?: Npc
   private flapping = false
   private singing = false
   private facing = -1
@@ -39,8 +41,9 @@ export class GameScene extends Phaser.Scene {
     this.player = this.physics.add.sprite(20, 20, 'birb')
     this.player.setCollideWorldBounds(true)
 
-    const particles = this.add.particles('notes')
-    const emitter = particles.createEmitter({
+    const noteParticles = this.add.particles('notes')
+
+    const emitter = noteParticles.createEmitter({
       frame: [ 0, 1, 2, 3, 4, 5, 6, 7 ],
       x: 40,
       y: 0,
@@ -106,12 +109,21 @@ export class GameScene extends Phaser.Scene {
         )
 
         emitter.start()
+
+        const closest = this.closestBirb()
+        if (closest) {
+          this.mate = closest
+          this.mate.startLovin()
+        }
       }
     })
 
     singButton.on('up', () => {
       this.singing = false
       emitter.stop()
+      if (this.mate) {
+        this.mate.stopLovin()
+      }
     })
   }
 
@@ -174,5 +186,32 @@ export class GameScene extends Phaser.Scene {
     if (this.player.body.velocity.x) return 'walk'
 
     return 'stand'
+  }
+
+  closestBirb (): Npc | void {
+    if (!this.player) {
+      throw new Error('player does not exist')
+    }
+
+    const closest = this.NPCs.reduce((closest, npc) => {
+      if (!this.player) {
+        throw new Error('player does not exist')
+      }
+
+      const closestDistance = Phaser.Math.Distance
+        .BetweenPoints(this.player, closest.getPosition())
+
+      const npcDistance = Phaser.Math.Distance
+        .BetweenPoints(this.player, npc.getPosition())
+
+      return (npcDistance < closestDistance) ? npc : closest
+    })
+
+    const distance = Phaser.Math.Distance
+      .BetweenPoints(this.player, closest.getPosition())
+
+    return distance > MATING_RANGE
+      ? undefined
+      : closest
   }
 }
