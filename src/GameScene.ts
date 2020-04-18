@@ -11,7 +11,7 @@ export class GameScene extends Phaser.Scene {
   private player = new Player(this, 20, 20)
   private NPCs = [
     new Npc(this, 50, 50, 'assets/bluebird.png'),
-    new Npc(this, 100, 50, 'assets/redbird.png'),
+    new Npc(this, 100, 50, 'assets/redbird.png')
   ]
 
   private entities: Entity[] = [ ...this.NPCs, this.player ]
