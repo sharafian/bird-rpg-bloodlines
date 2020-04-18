@@ -1,6 +1,6 @@
 import Phaser from 'phaser'
 
-const TILE_SIZE = 12
+const TILE_SIZE = 16
 
 export class GameScene extends Phaser.Scene {
   private cursors?: Phaser.Types.Input.Keyboard.CursorKeys
@@ -18,13 +18,19 @@ export class GameScene extends Phaser.Scene {
       frameWidth: TILE_SIZE,
       frameHeight: TILE_SIZE
     })
+
+    this.load.tilemapTiledJSON('map', 'assets/tilemap.json')
+    this.load.spritesheet('grass', 'assets/grass.png', {
+      frameWidth: TILE_SIZE,
+      frameHeight: TILE_SIZE
+    })
   }
 
   create () {
-    this.add.image(400, 300, 'sky')
+    // this.add.image(400, 300, 'sky')
 
     this.cursors = this.input.keyboard.createCursorKeys()
-    this.player = this.physics.add.sprite(20, 20, 'birb')
+    this.player = this.physics.add.sprite(50, 50, 'birb')
     this.player.setCollideWorldBounds(true)
 
     this.anims.create({
@@ -64,6 +70,13 @@ export class GameScene extends Phaser.Scene {
         end: 5
       })
     })
+
+    // Environment
+    this.cameras.main.startFollow(this.player, true, 0.1, 0.1)
+
+    const map = this.make.tilemap({ key: 'map' })
+    const tileset = map.addTilesetImage('tiles')
+    map.createStaticLayer(0, tileset, 0, 0)
   }
 
   update () {
