@@ -1,6 +1,6 @@
 import { GameScene, BIRD_SIZE } from '../GameScene'
 
-export default class Npc {
+export class Npc {
   private scene: GameScene
   private x: number
   private y: number
