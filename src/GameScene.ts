@@ -1,6 +1,6 @@
 import Phaser from 'phaser'
 
-const TILE_SIZE = 16
+const TILE_SIZE = 32
 const BIRD_SIZE = 50
 
 export class GameScene extends Phaser.Scene {
@@ -20,20 +20,19 @@ export class GameScene extends Phaser.Scene {
       frameHeight: BIRD_SIZE
     })
 
-    this.load.tilemapTiledJSON('map', 'assets/tilemap.json')
-    this.load.spritesheet('grass', 'assets/grass.png', {
-      frameWidth: TILE_SIZE,
-      frameHeight: TILE_SIZE
-    })
+    // environment
+    // this.load.tilemapTiledJSON('map', 'assets/tilemap.json')
+    this.load.tilemapCSV('environment_map', 'assets/environment.csv')
+    this.load.image('environment_tiles', 'assets/environment.png')
   }
 
   create () {
-    this.add.image(400, 300, 'sky')
-
+    
     this.cursors = this.input.keyboard.createCursorKeys()
-    this.player = this.physics.add.sprite(50, 50, 'birb')
-    this.player.setCollideWorldBounds(true)
+    this.player = this.physics.add.sprite(0, 0, 'birb')
+    this.player.setCollideWorldBounds(false)
 
+    // Animations
     this.anims.create({
       key: 'stand',
       frameRate: 0,
@@ -53,11 +52,16 @@ export class GameScene extends Phaser.Scene {
     })
 
     // Environment
-    this.cameras.main.startFollow(this.player, true, 0.1, 0.1)
+    const map = this.make.tilemap({ key: 'environment_map', tileWidth: TILE_SIZE, tileHeight: TILE_SIZE })
+    const ground_tileset = map.addTilesetImage('environment_tiles')
+    const layer = map.createStaticLayer(0, ground_tileset, 0, 0)
+    
+    layer.setCollisionBetween(0, 0)    
+    this.physics.add.collider(this.player, layer)
 
-    const map = this.make.tilemap({ key: 'map' })
-    const tileset = map.addTilesetImage('tiles')
-    map.createStaticLayer(0, tileset, 0, 0)
+    this.cameras.main.startFollow(this.player, true, 0.1, 0.1)
+    this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels)
+    this.cameras.main.setBackgroundColor('#a6dbed')
   }
 
   update () {
