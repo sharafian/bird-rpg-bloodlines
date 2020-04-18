@@ -11,6 +11,7 @@ export class GameScene extends Phaser.Scene {
     new Npc(this, 100, 50, 'assets/redbird.png'),
   ]
   private flapping = false
+  private singing = false
   private facing = -1
 
   constructor () {
@@ -18,6 +19,11 @@ export class GameScene extends Phaser.Scene {
   }
 
   preload () {
+    this.load.spritesheet('notes', 'assets/particles/notes.png', {
+      frameWidth: 12,
+      frameHeight: 12
+    })
+
     this.load.image('sky', 'assets/sky.png')
     this.load.spritesheet('birb', 'assets/birb3.png', {
       frameWidth: BIRD_SIZE,
@@ -32,6 +38,22 @@ export class GameScene extends Phaser.Scene {
     this.cursors = this.input.keyboard.createCursorKeys()
     this.player = this.physics.add.sprite(20, 20, 'birb')
     this.player.setCollideWorldBounds(true)
+
+    const particles = this.add.particles('notes')
+    const emitter = particles.createEmitter({
+      frame: [ 0, 1, 2, 3, 4, 5, 6, 7 ],
+      x: 40,
+      y: 0,
+      lifespan: 800,
+      speed: { min: 100, max: 200 },
+      angle: { min: 300, max: 360 },
+      radial: true,
+      gravityY: 0,
+      quantity: 2,
+      frequency: 150
+    })
+
+    emitter.stop()
 
     this.anims.create({
       key: 'stand',
@@ -50,11 +72,46 @@ export class GameScene extends Phaser.Scene {
         end: 2
       })
     })
+
     this.NPCs.forEach((npc) => npc.create())
+
+    const singButton = this.input.keyboard.addKey('Z')
+    singButton.on('down', () => {
+      const vy = this.player?.body.velocity.y
+      const vx = this.player?.body.velocity.x
+      const stopped = vy === 0 && vx === 0
+
+      if (this.player && stopped) {
+        this.singing = true
+        console.log('singing')
+
+        emitter.setEmitterAngle({
+          min: (this.facing < 0 ? 180 : 300),
+          max: (this.facing < 0 ? 240 : 360)
+        })
+
+        emitter.setPosition(
+          this.player.x + 20 * this.facing,
+          this.player.y - 10
+        )
+
+        emitter.start()
+      }
+    })
+
+    singButton.on('up', () => {
+      this.singing = false
+      emitter.stop()
+    })
   }
 
   update () {
     if (!this.cursors || !this.player) {
+      return
+    }
+
+    if (this.singing) {
+      this.player.setVelocityX(0)
       return
     }
 
