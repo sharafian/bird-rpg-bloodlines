@@ -150,6 +150,10 @@ export class GameScene extends Phaser.Scene {
       this.player.setVelocityX(0)
     }
 
+    if (this.isFlying()) {
+      this.player.setVelocityX(2 * this.facing * BIRD_SIZE)
+    }
+
     this.player.setFlipX(this.facing > 0)
     const anim = this.getAnim()
     if (this.player.anims.currentAnim?.key !== anim) {
@@ -158,10 +162,15 @@ export class GameScene extends Phaser.Scene {
     this.NPCs.forEach((npc) => npc.update())
   }
 
+  isFlying (): boolean {
+    if (!this.player) throw new Error('no player')
+    return !!this.player.body.velocity.y
+  }
+
   getAnim (): string {
     if (!this.player) return 'stand'
 
-    if (this.player.body.velocity.y) return 'fly'
+    if (this.isFlying()) return 'fly'
     if (this.player.body.velocity.x) return 'walk'
 
     return 'stand'
