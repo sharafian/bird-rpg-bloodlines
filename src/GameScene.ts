@@ -5,8 +5,8 @@ const TILE_SIZE = 12
 export class GameScene extends Phaser.Scene {
   private cursors?: Phaser.Types.Input.Keyboard.CursorKeys
   private player?: Phaser.Physics.Arcade.Sprite
-
   private flapping = false
+  private facing = -1
 
   constructor () {
     super('game-scene')
@@ -32,7 +32,7 @@ export class GameScene extends Phaser.Scene {
       frameRate: 0,
       frames: this.anims.generateFrameNumbers('birb', {
         start: 1,
-        end: 1
+        end: 2
       })
     })
 
@@ -41,7 +41,7 @@ export class GameScene extends Phaser.Scene {
       frameRate: 0,
       frames: this.anims.generateFrameNumbers('birb', {
         start: 0,
-        end: 0
+        end: 1
       })
     })
 
@@ -71,7 +71,7 @@ export class GameScene extends Phaser.Scene {
       return
     }
 
-    const flying = !this.player.body.touching.down
+    const flying = this.player.body.velocity.y !== 0
 
     if (this.cursors.up?.isDown) {
       if (!this.flapping) {
@@ -84,13 +84,18 @@ export class GameScene extends Phaser.Scene {
     }
 
     if (this.cursors.left?.isDown) {
-      // this.player.anims.play(flying ? 'fly-left' : 'left', true)
+      this.facing = -1
       this.player.setVelocityX(-2 * TILE_SIZE)
     } else if (this.cursors.right?.isDown) {
-      // this.player.anims.play(flying ? 'fly-right' : 'right', true)
+      this.facing = 1
       this.player.setVelocityX(2 * TILE_SIZE)
     } else {
       this.player.setVelocityX(0)
+    }
+
+    const anim = (flying ? 'fly-' : '') + (this.facing < 0 ? 'left' : 'right')
+    if (this.player.anims.currentAnim?.key !== anim) {
+      this.player.anims.play(anim)
     }
   }
 }
