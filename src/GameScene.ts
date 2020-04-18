@@ -1,7 +1,7 @@
 import Phaser from 'phaser'
 import Npc from './entities/Npc'
 
-export const BIRD_SIZE = 50
+const BIRD_SIZE = 50
 
 export class GameScene extends Phaser.Scene {
   private cursors?: Phaser.Types.Input.Keyboard.CursorKeys
@@ -35,7 +35,7 @@ export class GameScene extends Phaser.Scene {
       frameRate: 0,
       frames: this.anims.generateFrameNumbers('birb', {
         start: 2,
-        end: 2
+        end: 1
       })
     })
 
