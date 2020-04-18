@@ -1,12 +1,15 @@
 import Phaser from 'phaser'
 import Npc from './entities/Npc'
 
-const BIRD_SIZE = 50
+export const BIRD_SIZE = 50
 
 export class GameScene extends Phaser.Scene {
   private cursors?: Phaser.Types.Input.Keyboard.CursorKeys
   private player?: Phaser.Physics.Arcade.Sprite
-  private npc = new Npc(this, 25, 20)
+  private NPCs = [
+    new Npc(this, 50, 50, 'assets/bluebird.png'),
+    new Npc(this, 100, 50, 'assets/redbird.png'),
+  ]
   private flapping = false
   private facing = -1
 
@@ -20,7 +23,7 @@ export class GameScene extends Phaser.Scene {
       frameWidth: BIRD_SIZE,
       frameHeight: BIRD_SIZE
     })
-    this.npc.preload()
+    this.NPCs.forEach((npc) => npc.preload())
   }
 
   create () {
@@ -47,7 +50,7 @@ export class GameScene extends Phaser.Scene {
         end: 1
       })
     })
-    this.npc.create()
+    this.NPCs.forEach((npc) => npc.create())
   }
 
   update () {
@@ -83,6 +86,6 @@ export class GameScene extends Phaser.Scene {
     if (this.player.anims.currentAnim?.key !== anim) {
       this.player.anims.play(anim)
     }
-    this.npc.update()
+    this.NPCs.forEach((npc) => npc.update())
   }
 }
