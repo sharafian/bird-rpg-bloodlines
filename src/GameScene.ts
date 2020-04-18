@@ -1,7 +1,7 @@
 import Phaser from 'phaser'
 
 const TILE_SIZE = 16
-const BIRD_SIZE = 52
+const BIRD_SIZE = 50
 
 export class GameScene extends Phaser.Scene {
   private cursors?: Phaser.Types.Input.Keyboard.CursorKeys
