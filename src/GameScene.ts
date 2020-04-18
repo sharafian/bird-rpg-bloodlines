@@ -7,6 +7,8 @@ import { Entity } from './types/Entity'
 export const BIRD_SIZE = 50
 export const MATING_RANGE = 150
 
+export const TILE_SIZE = 32
+
 export class GameScene extends Phaser.Scene {
   private player = new Player(this, 20, 20)
   private NPCs = [
@@ -21,13 +23,16 @@ export class GameScene extends Phaser.Scene {
   }
 
   preload () {
-    this.load.image('sky', 'assets/sky.png')
+    this.load.tilemapCSV('environment_map', 'assets/environment.csv')
+    this.load.image('environment_tiles', 'assets/environment.png')
+
     this.entities.forEach((ent) => ent.preload())
   }
 
   create () {
-    this.add.image(400, 300, 'sky')
     this.entities.forEach((ent) => ent.create())
+
+    this.createEnvironment()
 
     this.player.on('start_singing', () => {
       const mate = this.closestBirb()
@@ -37,6 +42,21 @@ export class GameScene extends Phaser.Scene {
         mate.startLovin()
       }
     })
+  }
+
+  createEnvironment () {
+    const playerSprite = this.player.getSprite()
+
+    const map = this.make.tilemap({ key: 'environment_map', tileWidth: TILE_SIZE, tileHeight: TILE_SIZE })
+    const ground_tileset = map.addTilesetImage('environment_tiles')
+    const layer = map.createStaticLayer(0, ground_tileset, 0, 0)
+    
+    layer.setCollisionBetween(0, 0)    
+    this.physics.add.collider(playerSprite, layer)
+
+    this.cameras.main.startFollow(playerSprite, true, 0.1, 0.1)
+    this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels)
+    this.cameras.main.setBackgroundColor('#a6dbed')
   }
 
   update () {

@@ -49,7 +49,7 @@ export class Player extends EventEmitter {
     emitter.stop()
 
     this.sprite = this.scene.physics.add.sprite(this.x, this.y, 'birb')
-    this.sprite.setCollideWorldBounds(true)
+    // this.sprite.setCollideWorldBounds(true)
 
     this.scene.anims.create({
       key: 'stand',
@@ -191,5 +191,13 @@ export class Player extends EventEmitter {
   getPosition () {
     if (!this.sprite) throw new Error('no player')
     return this.sprite
+  }
+
+  getSprite () {
+    if (!this.sprite) { 
+      throw new Error("Player object has no sprite.") 
+    } else {
+    return this.sprite
+    }
   }
 } 
