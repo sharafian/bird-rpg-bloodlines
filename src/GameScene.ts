@@ -1,12 +1,13 @@
 import Phaser from 'phaser'
 
 const TILE_SIZE = 16
+const BIRD_SIZE = 52
 
 export class GameScene extends Phaser.Scene {
   private cursors?: Phaser.Types.Input.Keyboard.CursorKeys
   private player?: Phaser.Physics.Arcade.Sprite
-
   private flapping = false
+  private facing = -1
 
   constructor () {
     super('game-scene')
@@ -15,8 +16,8 @@ export class GameScene extends Phaser.Scene {
   preload () {
     this.load.image('sky', 'assets/sky.png')
     this.load.spritesheet('birb', 'assets/birb.png', {
-      frameWidth: TILE_SIZE,
-      frameHeight: TILE_SIZE
+      frameWidth: BIRD_SIZE,
+      frameHeight: BIRD_SIZE
     })
 
     this.load.tilemapTiledJSON('map', 'assets/tilemap.json')
@@ -27,47 +28,27 @@ export class GameScene extends Phaser.Scene {
   }
 
   create () {
-    // this.add.image(400, 300, 'sky')
+    this.add.image(400, 300, 'sky')
 
     this.cursors = this.input.keyboard.createCursorKeys()
     this.player = this.physics.add.sprite(50, 50, 'birb')
     this.player.setCollideWorldBounds(true)
 
     this.anims.create({
-      key: 'right',
+      key: 'stand',
       frameRate: 0,
-      frames: this.anims.generateFrameNumbers('birb', {
-        start: 1,
-        end: 1
-      })
-    })
-
-    this.anims.create({
-      key: 'left',
-      frameRate: 0,
-      frames: this.anims.generateFrameNumbers('birb', {
-        start: 0,
-        end: 0
-      })
-    })
-
-    this.anims.create({
-      key: 'fly-left',
-      frameRate: 10,
-      repeat: -1,
       frames: this.anims.generateFrameNumbers('birb', {
         start: 2,
-        end: 3
+        end: 2
       })
     })
 
     this.anims.create({
-      key: 'fly-right',
+      key: 'fly',
       frameRate: 10,
-      repeat: -1,
       frames: this.anims.generateFrameNumbers('birb', {
-        start: 4,
-        end: 5
+        start: 0,
+        end: 1
       })
     })
 
@@ -84,11 +65,12 @@ export class GameScene extends Phaser.Scene {
       return
     }
 
-    const flying = !this.player.body.touching.down
+    const flying = this.player.body.velocity.y !== 0
 
     if (this.cursors.up?.isDown) {
       if (!this.flapping) {
-        this.player.setVelocityY(-5 * TILE_SIZE)
+        this.player.anims.play('fly')
+        this.player.setVelocityY(-5 * BIRD_SIZE)
       }
 
       this.flapping = true
@@ -97,13 +79,19 @@ export class GameScene extends Phaser.Scene {
     }
 
     if (this.cursors.left?.isDown) {
-      // this.player.anims.play(flying ? 'fly-left' : 'left', true)
-      this.player.setVelocityX(-2 * TILE_SIZE)
+      this.facing = -1
+      this.player.setVelocityX(-2 * BIRD_SIZE)
     } else if (this.cursors.right?.isDown) {
-      // this.player.anims.play(flying ? 'fly-right' : 'right', true)
-      this.player.setVelocityX(2 * TILE_SIZE)
+      this.facing = 1
+      this.player.setVelocityX(2 * BIRD_SIZE)
     } else {
       this.player.setVelocityX(0)
+    }
+
+    this.player.setFlipX(this.facing > 0)
+    const anim = flying ? 'fly' : 'stand'
+    if (this.player.anims.currentAnim?.key !== anim) {
+      this.player.anims.play(anim)
     }
   }
 }
