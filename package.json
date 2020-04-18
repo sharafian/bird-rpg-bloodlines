@@ -1,0 +1,25 @@
+{
+  "name": "phaser-typescript-project",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "sharafian <ben@sharafian.me>",
+  "license": "Apache-2.0",
+  "scripts": {
+    "build": "webpack",
+    "start": "http-server",
+    "lint": "tslint --project ."
+  },
+  "devDependencies": {
+    "http-server": "^0.12.1",
+    "source-map-loader": "^0.2.4",
+    "ts-loader": "^6.2.2",
+    "tslint": "^6.1.1",
+    "tslint-config-standard": "^9.0.0",
+    "typescript": "^3.8.3",
+    "webpack": "^4.42.1",
+    "webpack-cli": "^3.3.11"
+  },
+  "dependencies": {
+    "phaser": "^3.22.0"
+  }
+}
