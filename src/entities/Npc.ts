@@ -39,16 +39,17 @@ export default class Npc {
     })
     this.sprite.anims.play(`${this.asset}-stand`)
     this.sprite.setCollideWorldBounds(true)
+    this.sprite.setDebug(true, true, 0x00ff00)
 
     const hearticles = this.scene.add.particles('heart')
     this.heartEmitter = hearticles.createEmitter({
-      lifespan: 400,
-      speed: { min: 100, max: 200 },
-      angle: { min: 180, max: 360 },
+      lifespan: 1000,
+      speed: { min: 25, max: 50 },
+      angle: { min: 250, max: 290 },
       radial: true,
-      gravityY: 100,
-      frequency: 150,
-      quantity: 2
+      gravityY: -50,
+      frequency: 250,
+      quantity: 1
     })
   }
 
@@ -61,7 +62,7 @@ export default class Npc {
 
     this.heartEmitter.start()
     this.heartEmitter.setPosition(
-      this.sprite.x + BIRD_SIZE / 2,
+      this.sprite.x + BIRD_SIZE + this.facing * BIRD_SIZE / 2,
       this.sprite.y + BIRD_SIZE / 2)
   }
 

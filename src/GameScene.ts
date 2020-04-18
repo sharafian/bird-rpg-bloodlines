@@ -90,6 +90,10 @@ export class GameScene extends Phaser.Scene {
 
     const singButton = this.input.keyboard.addKey('Z')
     singButton.on('down', () => {
+      if (this.mate) {
+        return
+      }
+
       const vy = this.player?.body.velocity.y
       const vx = this.player?.body.velocity.x
       const stopped = vy === 0 && vx === 0
@@ -119,11 +123,12 @@ export class GameScene extends Phaser.Scene {
     })
 
     singButton.on('up', () => {
+      if (this.mate) {
+        return
+      }
+
       this.singing = false
       emitter.stop()
-      if (this.mate) {
-        this.mate.stopLovin()
-      }
     })
   }
 
