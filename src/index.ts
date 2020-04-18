@@ -3,6 +3,7 @@ import Phaser from 'phaser'
 import { GameScene } from './GameScene'
 import { AboutMenu } from './AboutMenu'
 import { MainMenu } from './MainMenu'
+import { MateScene } from './MateScene'
 
 const ZOOM = 1
 
@@ -25,10 +26,10 @@ const config = {
     default: 'arcade',
     arcade: {
       gravity: { y: 500 },
-      debug: false
+      debug: true
     }
   },
-  scene: [ MainMenu, GameScene, AboutMenu ]
+  scene: [ MainMenu, GameScene, AboutMenu, MateScene ]
 }
 
 const game = new Phaser.Game(config)
