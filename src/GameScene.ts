@@ -15,7 +15,7 @@ export class GameScene extends Phaser.Scene {
 
   preload () {
     this.load.image('sky', 'assets/sky.png')
-    this.load.spritesheet('birb', 'assets/birb.png', {
+    this.load.spritesheet('birb', 'assets/birb3.png', {
       frameWidth: BIRD_SIZE,
       frameHeight: BIRD_SIZE
     })
@@ -38,8 +38,8 @@ export class GameScene extends Phaser.Scene {
       key: 'stand',
       frameRate: 0,
       frames: this.anims.generateFrameNumbers('birb', {
-        start: 2,
-        end: 1
+        start: 3,
+        end: 2
       })
     })
 
@@ -48,7 +48,7 @@ export class GameScene extends Phaser.Scene {
       frameRate: 10,
       frames: this.anims.generateFrameNumbers('birb', {
         start: 0,
-        end: 1
+        end: 2
       })
     })
 
@@ -69,7 +69,10 @@ export class GameScene extends Phaser.Scene {
 
     if (this.cursors.up?.isDown) {
       if (!this.flapping) {
-        this.player.anims.play('fly')
+        if (!this.player.anims.isPlaying) {
+          this.player.anims.play('fly')
+        }
+
         this.player.setVelocityY(-5 * BIRD_SIZE)
       }
 
