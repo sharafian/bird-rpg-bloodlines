@@ -25,7 +25,7 @@ export class GameScene extends Phaser.Scene {
     })
 
     this.load.image('sky', 'assets/sky.png')
-    this.load.spritesheet('birb', 'assets/birb3.png', {
+    this.load.spritesheet('birb', 'assets/birb4.png', {
       frameWidth: BIRD_SIZE,
       frameHeight: BIRD_SIZE
     })
@@ -61,6 +61,16 @@ export class GameScene extends Phaser.Scene {
       frames: this.anims.generateFrameNumbers('birb', {
         start: 3,
         end: 2
+      })
+    })
+
+    this.anims.create({
+      key: 'walk',
+      frameRate: 10,
+      repeat: -1,
+      frames: this.anims.generateFrameNumbers('birb', {
+        start: 3,
+        end: 5
       })
     })
 
@@ -115,7 +125,6 @@ export class GameScene extends Phaser.Scene {
       return
     }
 
-    const flying = this.player.body.velocity.y !== 0
 
     if (this.cursors.up?.isDown) {
       if (!this.flapping) {
@@ -142,10 +151,19 @@ export class GameScene extends Phaser.Scene {
     }
 
     this.player.setFlipX(this.facing > 0)
-    const anim = flying ? 'fly' : 'stand'
+    const anim = this.getAnim()
     if (this.player.anims.currentAnim?.key !== anim) {
       this.player.anims.play(anim)
     }
     this.NPCs.forEach((npc) => npc.update())
+  }
+
+  getAnim (): string {
+    if (!this.player) return 'stand'
+
+    if (this.player.body.velocity.y) return 'fly'
+    if (this.player.body.velocity.x) return 'walk'
+
+    return 'stand'
   }
 }
