@@ -7,6 +7,7 @@
   "scripts": {
     "build": "webpack",
     "start": "http-server",
+    "watch": "http-server & webpack --watch",
     "lint": "tslint --project ."
   },
   "devDependencies": {
