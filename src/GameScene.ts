@@ -12,7 +12,7 @@ export class GameScene extends Phaser.Scene {
     super('game-scene')
   }
 
-  preload (this: Phaser.Scene) {
+  preload () {
     this.load.image('sky', 'assets/sky.png')
     this.load.spritesheet('birb', 'assets/birb.png', {
       frameWidth: TILE_SIZE,
