@@ -1,6 +1,6 @@
 import Phaser from 'phaser'
 
-const TILE_SIZE = 12
+const BIRD_SIZE = 52
 
 export class GameScene extends Phaser.Scene {
   private cursors?: Phaser.Types.Input.Keyboard.CursorKeys
@@ -15,8 +15,8 @@ export class GameScene extends Phaser.Scene {
   preload () {
     this.load.image('sky', 'assets/sky.png')
     this.load.spritesheet('birb', 'assets/birb.png', {
-      frameWidth: TILE_SIZE,
-      frameHeight: TILE_SIZE
+      frameWidth: BIRD_SIZE,
+      frameHeight: BIRD_SIZE
     })
   }
 
@@ -28,40 +28,20 @@ export class GameScene extends Phaser.Scene {
     this.player.setCollideWorldBounds(true)
 
     this.anims.create({
-      key: 'right',
+      key: 'stand',
       frameRate: 0,
       frames: this.anims.generateFrameNumbers('birb', {
-        start: 1,
+        start: 2,
         end: 2
       })
     })
 
     this.anims.create({
-      key: 'left',
-      frameRate: 0,
+      key: 'fly',
+      frameRate: 10,
       frames: this.anims.generateFrameNumbers('birb', {
         start: 0,
         end: 1
-      })
-    })
-
-    this.anims.create({
-      key: 'fly-left',
-      frameRate: 10,
-      repeat: -1,
-      frames: this.anims.generateFrameNumbers('birb', {
-        start: 2,
-        end: 3
-      })
-    })
-
-    this.anims.create({
-      key: 'fly-right',
-      frameRate: 10,
-      repeat: -1,
-      frames: this.anims.generateFrameNumbers('birb', {
-        start: 4,
-        end: 5
       })
     })
   }
@@ -75,7 +55,8 @@ export class GameScene extends Phaser.Scene {
 
     if (this.cursors.up?.isDown) {
       if (!this.flapping) {
-        this.player.setVelocityY(-5 * TILE_SIZE)
+        this.player.anims.play('fly')
+        this.player.setVelocityY(-5 * BIRD_SIZE)
       }
 
       this.flapping = true
@@ -85,15 +66,16 @@ export class GameScene extends Phaser.Scene {
 
     if (this.cursors.left?.isDown) {
       this.facing = -1
-      this.player.setVelocityX(-2 * TILE_SIZE)
+      this.player.setVelocityX(-2 * BIRD_SIZE)
     } else if (this.cursors.right?.isDown) {
       this.facing = 1
-      this.player.setVelocityX(2 * TILE_SIZE)
+      this.player.setVelocityX(2 * BIRD_SIZE)
     } else {
       this.player.setVelocityX(0)
     }
 
-    const anim = (flying ? 'fly-' : '') + (this.facing < 0 ? 'left' : 'right')
+    this.player.setFlipX(this.facing > 0)
+    const anim = flying ? 'fly' : 'stand'
     if (this.player.anims.currentAnim?.key !== anim) {
       this.player.anims.play(anim)
     }

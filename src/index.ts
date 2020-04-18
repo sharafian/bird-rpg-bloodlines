@@ -4,22 +4,12 @@ import { GameScene } from './GameScene'
 
 const config = {
   type: Phaser.AUTO,
-  pixelArt: true,
-  scale: {
-    mode: Phaser.Scale.FIT,
-    autoCenter: Phaser.Scale.CENTER_BOTH,
-    width: 100,
-    height: 75,
-    zoom: 4,
-    max: {
-      width: 200,
-      height: 160
-    }
-  },
+  width: 800,
+  height: 600,
   physics: {
     default: 'arcade',
     arcade: {
-      gravity: { y: 200 },
+      gravity: { y: 500 },
       debug: false
     }
   },
