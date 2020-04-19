@@ -12,8 +12,8 @@ export const TILE_SIZE = 32
 export class GameScene extends Phaser.Scene {
   private player = new Player(this, 20, 20)
   private NPCs = [
-    new Npc(this, 50, 50, 'assets/bluebird.png'),
-    new Npc(this, 100, 50, 'assets/redbird.png'),
+    new Npc(this, 1000, 50, 'assets/bluebird.png'),
+    new Npc(this, 1500, 50, 'assets/redbird.png'),
   ]
 
   private entities: Entity[] = [ ...this.NPCs, this.player ]
@@ -45,16 +45,16 @@ export class GameScene extends Phaser.Scene {
   }
 
   createEnvironment () {
-    const playerSprite = this.player.getSprite()
-
     const map = this.make.tilemap({ key: 'environment_map', tileWidth: TILE_SIZE, tileHeight: TILE_SIZE })
     const ground_tileset = map.addTilesetImage('environment_tiles')
     const layer = map.createStaticLayer(0, ground_tileset, 0, 0)
     
     layer.setCollisionBetween(0, 0)    
-    this.physics.add.collider(playerSprite, layer)
+    this.entities.forEach(ent => {
+      this.physics.add.collider(ent.getSprite(), layer)
+    })
 
-    this.cameras.main.startFollow(playerSprite, true, 0.1, 0.1)
+    this.cameras.main.startFollow(this.player.getSprite(), true, 0.1, 0.1)
     this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels)
     this.cameras.main.setBackgroundColor('#a6dbed')
   }

@@ -107,4 +107,12 @@ export class Npc {
       y: this.sprite.y
     }
   }
+
+  getSprite (): Phaser.Physics.Arcade.Sprite {
+    if (!this.sprite) {
+      throw new Error('sprite does not exist')
+    }
+
+    return this.sprite
+  }
 }
