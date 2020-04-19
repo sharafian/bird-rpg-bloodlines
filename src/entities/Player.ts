@@ -176,7 +176,7 @@ export class Player extends EventEmitter {
     }
 
     if (this.isFlying()) {
-      this.sprite.setVelocityX(2 * this.facing * BIRD_SIZE)
+      this.sprite.setVelocityX(4 * this.facing * BIRD_SIZE)
     }
 
     this.sprite.setFlipX(this.facing > 0)
@@ -203,6 +203,11 @@ export class Player extends EventEmitter {
   getPosition () {
     if (!this.sprite) throw new Error('no player')
     return this.sprite
+  }
+
+  die () {
+    console.log("player died")
+    // unimplemented
   }
 
   getSprite () {

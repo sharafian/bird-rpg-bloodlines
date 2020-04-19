@@ -2,6 +2,7 @@ import Phaser from 'phaser'
 
 import { Npc } from './entities/Npc'
 import { Player } from './entities/Player'
+import { GroundPredator } from './entities/GroundPredator'
 import { PhysicsEntity } from './types/Entity'
 
 export const BIRD_SIZE = 50
@@ -16,7 +17,11 @@ export class GameScene extends Phaser.Scene {
     new Npc(this, 1200, 50, 'assets/redbird.png')
   ]
 
-  private entities: PhysicsEntity[] = [ ...this.NPCs, this.player ]
+  private predators = [
+    new GroundPredator(this, 800, 100, 'assets/cat.png', 64)
+  ]
+
+  private entities: PhysicsEntity[] = [ ...this.NPCs, ...this.predators, this.player ]
 
   constructor () {
     super('game-scene')
@@ -37,6 +42,7 @@ export class GameScene extends Phaser.Scene {
 
   create () {
     this.entities.forEach((ent) => ent.create())
+    // todo: get this.physics.add.overlap(player, predators) working
 
     this.createEnvironment()
 
@@ -98,5 +104,9 @@ export class GameScene extends Phaser.Scene {
     return distance > MATING_RANGE
       ? undefined
       : closest
+  }
+
+  getPlayer () {
+    return this.player
   }
 }
