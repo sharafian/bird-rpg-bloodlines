@@ -45,6 +45,7 @@ export class GroundPredator {
       this.y,
       `${this.asset}-ground-predator`
     )
+
     this.scene.anims.create({
       key: `${this.asset}-stand`,
       frameRate: 0,
@@ -56,6 +57,45 @@ export class GroundPredator {
         }
       )
     })
+
+    this.scene.anims.create({
+      key: `${this.asset}-walk`,
+      frameRate: 2,
+      repeat: -1,
+      frames: this.scene.anims.generateFrameNumbers(
+        `${this.asset}-ground-predator`,
+        {
+          start: 0,
+          end: 3
+        }
+      )
+    })
+
+    this.scene.anims.create({
+      key: `${this.asset}-run`,
+      frameRate: 10,
+      repeat: -1,
+      frames: this.scene.anims.generateFrameNumbers(
+        `${this.asset}-ground-predator`,
+        {
+          start: 0,
+          end: 3
+        }
+      )
+    })
+
+    this.scene.anims.create({
+      key: `${this.asset}-jump`,
+      frameRate: 0,
+      frames: this.scene.anims.generateFrameNumbers(
+        `${this.asset}-ground-predator`,
+        {
+          start: 1,
+          end: 2
+        }
+      )
+    })
+
     this.sprite.anims.play(`${this.asset}-stand`)
     // this.sprite.setCollideWorldBounds(true)
     this.sprite.setDebug(true, true, 0x00ff00)
@@ -84,6 +124,13 @@ export class GroundPredator {
         this.attack(prey)
       }
     }
+
+    const anim = this.getAnim()
+    if (anim !== this.sprite!.anims.getCurrentKey()) {
+      this.sprite!.anims.play(anim)
+    }
+
+    this.sprite!.setFlipX(this.facing < 0)
   }
 
   isFarther (prey: Npc | Player, distance: number) {
@@ -100,21 +147,19 @@ export class GroundPredator {
     // large chance to do nothing
     if (rand > 0 && rand <= 0.05) {
       this.facing = this.facing < 0 ? 1 : -1
-    } else if (rand > 0.05 && rand <= 0.2) {
-      this.sprite!.setVelocityX(this.facing * 2 * this.size)
     } else {
-      this.sprite!.setVelocityX(0)
+      this.sprite!.setVelocityX(this.facing * 0.25 * this.size)
     }
-
-    this.sprite!.setFlipX(this.facing > 0)
   }
 
   runLeft () {
     this.sprite!.setVelocityX(-CHASE_SPEED)
+    this.facing = -1
   }
 
   runRight () {
     this.sprite!.setVelocityX(CHASE_SPEED)
+    this.facing = 1
   }
 
   jump () {
@@ -174,5 +219,15 @@ export class GroundPredator {
     }
 
     return this.sprite
+  }
+
+  getAnim () {
+    const onGround = this.sprite!.body.blocked.down
+    const vx = Math.abs(this.sprite!.body.velocity.x)
+
+    if (!onGround) return `${this.asset}-jump`
+    if (vx === CHASE_SPEED) return `${this.asset}-run`
+    if (vx) return `${this.asset}-walk`
+    else return `${this.asset}-stand`
   }
 }

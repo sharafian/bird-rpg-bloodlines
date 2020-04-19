@@ -18,7 +18,7 @@ export class GameScene extends Phaser.Scene {
   ]
 
   private predators = [
-    new GroundPredator(this, 1400, 700, 'assets/cat.png', 64)
+    new GroundPredator(this, 1400, 700, 'assets/cat2.png', 64)
   ]
 
   private entities: PhysicsEntity[] = [ ...this.NPCs, ...this.predators, this.player ]
