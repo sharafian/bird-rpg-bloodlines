@@ -13,12 +13,12 @@ export const TILE_SIZE = 32
 export class GameScene extends Phaser.Scene {
   private player = new Player(this, 20, 20)
   private NPCs = [
-    new Npc(this, 650, 550, 'assets/bluebird.png'),
+    new Npc(this, 445, 425, 'assets/bluebird.png'),
     new Npc(this, 1200, 50, 'assets/redbird.png')
   ]
 
   private predators = [
-    new GroundPredator(this, 800, 100, 'assets/cat.png', 64)
+    new GroundPredator(this, 1400, 700, 'assets/cat.png', 64)
   ]
 
   private entities: PhysicsEntity[] = [ ...this.NPCs, ...this.predators, this.player ]
@@ -28,8 +28,8 @@ export class GameScene extends Phaser.Scene {
   }
 
   preload () {
-    this.load.tilemapCSV('environment_map', 'assets/environment.csv')
-    this.load.image('environment_tiles', 'assets/environment.png')
+    this.load.tilemapCSV('environment_map', 'assets/environment2.csv')
+    this.load.image('environment_tiles', 'assets/environment2.png')
 
     this.entities.forEach((ent) => ent.preload())
   }
@@ -65,7 +65,7 @@ export class GameScene extends Phaser.Scene {
     const groundTileset = map.addTilesetImage('environment_tiles')
     const layer = map.createStaticLayer(0, groundTileset, 0, 0)
 
-    layer.setCollisionBetween(0, 0)
+    layer.setCollision([2, 8, 16, 22, 24, 44, 48])
     this.entities.forEach(ent => {
       this.physics.add.collider(ent.getSprite(), layer)
     })
