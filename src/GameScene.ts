@@ -13,8 +13,8 @@ export const TILE_SIZE = 32
 export class GameScene extends Phaser.Scene {
   private player = new Player(this, 20, 20)
   private NPCs = [
-    new Npc(this, 445, 425, 'assets/birb6.png'),
-    new Npc(this, 1200, 50, 'assets/birb6.png')
+    new Npc(this, 445, 425, 'assets/birb7.png'),
+    new Npc(this, 1200, 50, 'assets/birb7.png')
   ]
 
   private predators = [
@@ -100,6 +100,11 @@ export class GameScene extends Phaser.Scene {
       ;(this.cameras.main as any)._ch = this.map.heightInPixels
 
       this.cameras.main.fadeOut(3000, 0, 0, 0, this.onFade.bind(this))
+    }
+
+    const closest = this.closestBirb()
+    if (closest) {
+      closest.setShowOutline()
     }
 
     this.entities.forEach((ent) => ent.update(time, delta))

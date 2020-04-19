@@ -1,6 +1,7 @@
 import { GameScene, BIRD_SIZE } from '../GameScene'
 
 const CARD_DISTANCE = 100
+const CARD_MARGIN = 15
 
 export class Npc {
   private scene: GameScene
@@ -8,11 +9,13 @@ export class Npc {
   private y: number
   private asset: string
   private sprite?: Phaser.Physics.Arcade.Sprite
+  private outline?: Phaser.GameObjects.Sprite
   private card?: Phaser.GameObjects.Sprite
   private heartEmitter?: Phaser.GameObjects.Particles.ParticleEmitter
 
   private facing = -1
   private lovin = false
+  private showOutline = false
 
   constructor (scene: GameScene, x: number, y: number, asset: string) {
     this.scene = scene
@@ -36,10 +39,12 @@ export class Npc {
     this.lovin = false
 
     this.sprite = this.scene.physics.add.sprite(this.x, this.y, `${this.asset}-npc`)
+    this.sprite.setOrigin(0.5)
     this.sprite.setDepth(75)
 
     this.card = this.scene.add.sprite(this.x, this.y - BIRD_SIZE / 2, 'card')
     this.card.setDepth(150)
+    this.card.setVisible(false)
 
     this.scene.anims.create({
       key: `${this.asset}-stand`,
@@ -49,6 +54,16 @@ export class Npc {
         end: 3
       })
     })
+
+    this.scene.anims.create({
+      key: `${this.asset}-outline`,
+      frameRate: 0,
+      frames: this.scene.anims.generateFrameNumbers(`${this.asset}-npc`, {
+        start: 8,
+        end: 8
+      })
+    })
+
     this.sprite.anims.play(`${this.asset}-stand`)
     // this.sprite.setCollideWorldBounds(true)
     this.sprite.setDebug(true, true, 0x00ff00)
@@ -83,9 +98,8 @@ export class Npc {
     this.heartEmitter?.stop()
   }
 
-  private showCard () {
-    if (!this.sprite) return false
-    return Phaser.Math.Distance.BetweenPoints(this.scene.getPlayer().getSprite(), this.sprite) < CARD_DISTANCE
+  setShowOutline () {
+    this.showOutline = true
   }
 
   update () {
@@ -93,9 +107,19 @@ export class Npc {
       return
     }
 
-    const { x, y } = this.sprite
-    this.card?.setPosition(x, y - this.card.height / 2 - BIRD_SIZE / 2)
-    this.card?.setVisible(this.showCard())
+    if (this.showOutline) {
+      this.showOutline = false
+      this.card.setPosition(
+        this.scene.cameras.main.scrollX + this.scene.cameras.main.width - this.card.width / 2 - CARD_MARGIN,
+        this.scene.cameras.main.scrollY + this.card.height / 2 + CARD_MARGIN
+      )
+      this.card.setVisible(true)
+      this.sprite.anims.play(`${this.asset}-outline`)
+    } else {
+      this.card.setVisible(false)
+      this.sprite.anims.play(`${this.asset}-stand`)
+    }
+
 
     // Don't move while you're gettin it on
     if (this.lovin) {
