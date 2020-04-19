@@ -7,9 +7,9 @@
   "scripts": {
     "build": "webpack",
     "start": "http-server",
-    "serve": "live-server --watch='./dist','./assets' & webpack",
-    "deploy": "./deploy.sh",
-    "lint": "tslint --project ."
+    "serve": "live-server --watch='./dist','./assets' & webpack --watch",
+    "lint": "tslint --project .",
+    "deploy": "./deploy.sh"
   },
   "devDependencies": {
     "@types/node": "^13.13.0",
