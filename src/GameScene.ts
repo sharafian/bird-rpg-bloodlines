@@ -11,7 +11,7 @@ export const MATING_RANGE = 150
 export const TILE_SIZE = 32
 
 export class GameScene extends Phaser.Scene {
-  private player = new Player(this, 20, 20)
+  private player = new Player(this, 2000, 4000)
   private NPCs = [
     new Npc(this, 445, 425, 'assets/birb7.png'),
     new Npc(this, 1200, 50, 'assets/birb7.png')
@@ -30,7 +30,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   preload () {
-    this.load.tilemapCSV('environment_map', 'assets/environment2.csv')
+    this.load.tilemapCSV('environment_map', 'assets/map3.csv')
     this.load.image('environment_tiles_extruded', 'assets/environment_extruded.png')
 
     this.entities.forEach((ent) => ent.preload())
