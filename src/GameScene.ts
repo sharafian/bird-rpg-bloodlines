@@ -5,7 +5,7 @@ import { Player } from './entities/Player'
 import { GroundPredator } from './entities/GroundPredator'
 import { PhysicsEntity } from './types/Entity'
 
-export const BIRD_SIZE = 50
+export const BIRD_SIZE = 32
 export const MATING_RANGE = 150
 
 export const TILE_SIZE = 32
@@ -13,8 +13,8 @@ export const TILE_SIZE = 32
 export class GameScene extends Phaser.Scene {
   private player = new Player(this, 20, 20)
   private NPCs = [
-    new Npc(this, 445, 425, 'assets/bluebird.png'),
-    new Npc(this, 1200, 50, 'assets/redbird.png')
+    new Npc(this, 445, 425, 'assets/birb6.png'),
+    new Npc(this, 1200, 50, 'assets/birb6.png')
   ]
 
   private predators = [

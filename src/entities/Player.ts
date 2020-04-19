@@ -25,7 +25,7 @@ export class Player extends EventEmitter {
       frameHeight: 12
     })
 
-    this.scene.load.spritesheet('birb', 'assets/birb4.png', {
+    this.scene.load.spritesheet('birb', 'assets/birb5.png', {
       frameWidth: BIRD_SIZE,
       frameHeight: BIRD_SIZE
     })
