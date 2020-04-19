@@ -22,6 +22,8 @@ export class GameScene extends Phaser.Scene {
   ]
 
   private entities: PhysicsEntity[] = [ ...this.NPCs, ...this.predators, this.player ]
+  private scheduledFadeout = false
+  private map?: Phaser.Tilemaps.Tilemap
 
   constructor () {
     super('game-scene')
@@ -29,7 +31,7 @@ export class GameScene extends Phaser.Scene {
 
   preload () {
     this.load.tilemapCSV('environment_map', 'assets/environment2.csv')
-    this.load.image('environment_tiles', 'assets/environment2.png')
+    this.load.image('environment_tiles_extruded', 'assets/environment_extruded.png')
 
     this.entities.forEach((ent) => ent.preload())
 
@@ -53,6 +55,9 @@ export class GameScene extends Phaser.Scene {
     var music = this.sound.add('theme');
 
     music.play()
+    this.events.on('shutdown', () => {
+      music.stop()
+    })
 
     this.player.on('start_singing', () => {
       const mate = this.closestBirb()
@@ -60,18 +65,17 @@ export class GameScene extends Phaser.Scene {
       if (mate) {
         this.player.startLovin()
         mate.startLovin()
-
         setTimeout(() => {
-          this.cameras.main.fadeOut(3000, 0, 0, 0, this.onFade.bind(this))
+          this.scheduleFadeout()
         }, 1000)
       }
     })
   }
 
   createEnvironment () {
-    const map = this.make.tilemap({ key: 'environment_map', tileWidth: TILE_SIZE, tileHeight: TILE_SIZE })
-    const groundTileset = map.addTilesetImage('environment_tiles')
-    const layer = map.createStaticLayer(0, groundTileset, 0, 0)
+    this.map = this.make.tilemap({ key: 'environment_map', tileWidth: TILE_SIZE, tileHeight: TILE_SIZE })
+    const groundTileset = this.map.addTilesetImage('environment_tiles', 'environment_tiles_extruded', 32, 32, 1, 2)
+    const layer = this.map.createStaticLayer(0, groundTileset, 0, 0)
 
     layer.setCollision([2, 8, 16, 22, 24, 44, 48])
     this.entities.forEach(ent => {
@@ -79,11 +83,25 @@ export class GameScene extends Phaser.Scene {
     })
 
     this.cameras.main.startFollow(this.player.getSprite(), true, 0.1, 0.1)
-    this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels)
+    this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels)
     this.cameras.main.setBackgroundColor('#a6dbed')
   }
 
+  private scheduleFadeout () {
+    this.scheduledFadeout = true
+  }
+
   update () {
+    if (this.scheduledFadeout && this.map) {
+      this.scheduledFadeout = false
+
+      // don't try this at home, kids
+      ;(this.cameras.main as any)._cw = this.map.widthInPixels
+      ;(this.cameras.main as any)._ch = this.map.heightInPixels
+
+      this.cameras.main.fadeOut(3000, 0, 0, 0, this.onFade.bind(this))
+    }
+
     this.entities.forEach((ent) => ent.update())
   }
 
