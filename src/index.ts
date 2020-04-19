@@ -10,7 +10,7 @@ const ZOOM = 1
 const config = {
   type: Phaser.AUTO,
   pixelArt: true,
-  
+
   scale: {
     mode: Phaser.Scale.NONE,
     autoCenter: Phaser.Scale.CENTER_BOTH,

@@ -5,5 +5,8 @@ export interface Entity {
   create (): void
   update (): void
   getPosition (): void
+}
+
+export interface PhysicsEntity extends Entity {
   getSprite (): Phaser.Physics.Arcade.Sprite
 }

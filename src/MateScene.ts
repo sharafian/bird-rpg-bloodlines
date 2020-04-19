@@ -5,10 +5,10 @@ import { Egg } from './entities/Egg'
 import { Entity } from './types/Entity'
 
 export class MateScene extends Phaser.Scene {
-  private egg = new Egg(this, 400, 130)
+  private egg = new Egg(this, 320, 130)
   private sliders = [
-    new RouletteSlider(this, 400, 220, 0.3, 0.4),
-    new RouletteSlider(this, 400, 250, 0.5, 0.9)
+    new RouletteSlider(this, 320, 220, 0.3, 0.4),
+    new RouletteSlider(this, 320, 250, 0.5, 0.9)
   ]
 
   private components: Entity[] = [
@@ -24,23 +24,33 @@ export class MateScene extends Phaser.Scene {
     this.components.forEach(c => c.preload())
   }
 
+  onFade (_: Phaser.Cameras.Scene2D.Camera, progress: number) {
+    if (progress === 1) {
+      this.scene.start('game-scene')
+    }
+  }
+
   create () {
     this.components.forEach(c => c.create())
 
-    const text = this.add.text(250, 300, 'Hit ENTER to select attributes', {
+    const text = this.add.text(175, 300, 'Hit ENTER to select attributes', {
       color: 'white'
     })
 
     const key = this.input.keyboard.addKey('ENTER')
-    key.on('up', () => {
-      text.setText('')
-      setTimeout(() => {
-        text.setText('Hit ENTER to start next mating season')
-      }, 1000)
+    key.once('up', () => {
       this.sliders.forEach(s => s.stop())
+      text.setText('')
+
       this.egg.hatch()
+      this.egg.once('hatched', () => {
+        this.cameras.main.fadeOut(2000, 0, 0, 0, this.onFade.bind(this))
+      })
     })
 
+    this.events.on('shutdown', () => {
+      key.removeAllListeners()
+    })
   }
 
   update () {

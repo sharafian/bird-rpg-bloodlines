@@ -32,6 +32,11 @@ export class Player extends EventEmitter {
   }
 
   create () {
+    this.flapping = false
+    this.singing = false
+    this.lovin = false
+    this.facing = 1
+
     const noteParticles = this.scene.add.particles('notes')
     const emitter = noteParticles.createEmitter({
       frame: [ 0, 1, 2, 3, 4, 5, 6, 7 ],
@@ -93,7 +98,6 @@ export class Player extends EventEmitter {
 
       if (this.sprite && stopped) {
         this.singing = true
-        console.log('singing')
 
         emitter.setEmitterAngle({
           min: (this.facing < 0 ? 180 : 300),
@@ -121,11 +125,11 @@ export class Player extends EventEmitter {
     })
 
     this.scene.events.on('shutdown', () => {
-      singButton.destroy()
-      this.cursors?.up?.destroy()
-      this.cursors?.down?.destroy()
-      this.cursors?.left?.destroy()
-      this.cursors?.right?.destroy()
+      singButton.removeAllListeners()
+      this.cursors?.up?.removeAllListeners()
+      this.cursors?.down?.removeAllListeners()
+      this.cursors?.left?.removeAllListeners()
+      this.cursors?.right?.removeAllListeners()
     })
   }
 
@@ -202,10 +206,10 @@ export class Player extends EventEmitter {
   }
 
   getSprite () {
-    if (!this.sprite) { 
-      throw new Error("Player object has no sprite.") 
+    if (!this.sprite) {
+      throw new Error('Player object has no sprite.')
     } else {
       return this.sprite
     }
   }
-} 
+}

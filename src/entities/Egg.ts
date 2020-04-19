@@ -1,13 +1,16 @@
 import Phaser from 'phaser'
+import { EventEmitter } from 'events'
 
-export class Egg {
+export class Egg extends EventEmitter {
   private sprite?: Phaser.GameObjects.Sprite
 
   constructor (
     private scene: Phaser.Scene,
     private x: number,
     private y: number
-  ) {}
+  ) {
+    super()
+  }
 
   preload () {
     this.scene.load.spritesheet('hatch', 'assets/hatch.png', {
@@ -31,10 +34,14 @@ export class Egg {
   }
 
   update () {
+    return
   }
 
   hatch () {
     this.sprite?.anims.play('hatch')
+    this.sprite?.on('animationcomplete', () => {
+      this.emit('hatched')
+    })
   }
 
   getPosition () {

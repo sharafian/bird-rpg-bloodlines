@@ -15,7 +15,9 @@ export class RouletteSlider {
     private upperBound: number
   ) {}
 
-  preload () {}
+  preload () {
+    return
+  }
 
   private positionToX (position: number) {
     return this.x - (this.width / 2) + this.width * position
@@ -40,6 +42,7 @@ export class RouletteSlider {
   }
 
   create () {
+    this.stopped = false
     this.scene.add.rectangle(this.x, this.y, this.width, this.height, 0xffffff)
 
     const startingPos = this.lowerBound + Math.random() * (this.upperBound - this.lowerBound)
