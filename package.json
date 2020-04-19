@@ -7,7 +7,7 @@
   "scripts": {
     "build": "webpack",
     "start": "http-server",
-    "serve": "live-server --watch='./dist','./assets' & webpack",
+    "serve": "live-server --watch='./dist','./assets' & webpack --watch",
     "lint": "tslint --project ."
   },
   "devDependencies": {
