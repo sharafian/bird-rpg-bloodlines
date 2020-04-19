@@ -26,7 +26,7 @@ const config = {
     default: 'arcade',
     arcade: {
       gravity: { y: 500 },
-      debug: true
+      debug: false
     }
   },
   scene: [ MainMenu, GameScene, AboutMenu, MateScene ]
