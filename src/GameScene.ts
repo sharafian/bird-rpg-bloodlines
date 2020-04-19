@@ -91,7 +91,7 @@ export class GameScene extends Phaser.Scene {
     this.scheduledFadeout = true
   }
 
-  update () {
+  update (time: number, delta: number) {
     if (this.scheduledFadeout && this.map) {
       this.scheduledFadeout = false
 
@@ -102,7 +102,7 @@ export class GameScene extends Phaser.Scene {
       this.cameras.main.fadeOut(3000, 0, 0, 0, this.onFade.bind(this))
     }
 
-    this.entities.forEach((ent) => ent.update())
+    this.entities.forEach((ent) => ent.update(time, delta))
   }
 
   public closestBirb (): Npc | void {

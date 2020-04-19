@@ -5,6 +5,7 @@ import { Npc } from './Npc'
 const CHASE_DISTANCE = 250
 const CHASE_SPEED = 240
 const JUMP_POWER = 400
+const BEHAVIOR_TICK = 200
 
 export class GroundPredator {
   private scene: GameScene
@@ -15,6 +16,7 @@ export class GroundPredator {
   private size: number
 
   private facing = -1
+  private timeCounter = 0
 
   constructor (
     scene: GameScene,
@@ -69,27 +71,25 @@ export class GroundPredator {
     // )
   }
 
-  update () {
+  update (_: number, delta: number) {
     const prey = this.scene.getPlayer()
 
-    if (this.isClose(prey, CHASE_DISTANCE)) {
-      this.prowl()
-    } else {
-      this.attack(prey)
+    this.timeCounter += delta
+    if (this.timeCounter > BEHAVIOR_TICK) {
+      this.timeCounter = 0
+
+      if (this.isFarther(prey, CHASE_DISTANCE)) {
+        this.prowl()
+      } else {
+        this.attack(prey)
+      }
     }
   }
 
-  isClose (prey: Npc | Player, distance: number) {
+  isFarther (prey: Npc | Player, distance: number) {
     const selfLocation = this.getPosition()
     const playerLocation = prey.getPosition()
-    if (
-      Phaser.Math.Distance.BetweenPoints(selfLocation, playerLocation) >
-      distance
-    ) {
-      return true
-    } else {
-      return false
-    }
+    return Phaser.Math.Distance.BetweenPoints(selfLocation, playerLocation) > distance
   }
 
   prowl () {
@@ -98,7 +98,7 @@ export class GroundPredator {
     // small chance to change direction
     // medium chance to move in facing direction
     // large chance to do nothing
-    if (rand > 0 && rand <= 0.02) {
+    if (rand > 0 && rand <= 0.05) {
       this.facing = this.facing < 0 ? 1 : -1
     } else if (rand > 0.05 && rand <= 0.2) {
       this.sprite!.setVelocityX(this.facing * 2 * this.size)
@@ -128,24 +128,26 @@ export class GroundPredator {
   attack (prey: Npc | Player) {
     const preyPosition = prey.getPosition()
     const predatorPosition = this.getPosition()
+    const onGround = this.sprite!.body.blocked.down
+
     //   move in the x direction of prey and jump when reached
     // if bird is above
     if (
-      Math.abs(preyPosition.x! - predatorPosition.x!) < 10 &&
+      Math.abs(preyPosition.x! - predatorPosition.x!) < 100 &&
       predatorPosition.y! > preyPosition.y! + 100 &&
-      this.sprite!.body.blocked.down // if the ground is changed to an image change blocked to touching
+      onGround // if the ground is changed to an image change blocked to touching
     ) {
       // && this.sprite.body.touching.down
       this.jump()
       return
     } 
     
-    if (preyPosition.x! > predatorPosition.x!) {
+    if (preyPosition.x! > predatorPosition.x! && onGround) {
       this.runRight()
       return
     } 
     
-    if (preyPosition.x! < predatorPosition.x!) {
+    if (preyPosition.x! < predatorPosition.x! && onGround) {
       this.runLeft()
       return
     }
