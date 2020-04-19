@@ -32,6 +32,8 @@ export class Npc {
     this.lovin = false
 
     this.sprite = this.scene.physics.add.sprite(this.x, this.y, `${this.asset}-npc`)
+    this.sprite.setDepth(75)
+
     this.scene.anims.create({
       key: `${this.asset}-stand`,
       frameRate: 0,

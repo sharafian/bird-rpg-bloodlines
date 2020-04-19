@@ -45,6 +45,7 @@ export class GroundPredator {
       this.y,
       `${this.asset}-ground-predator`
     )
+    this.sprite.setDepth(50)
 
     this.scene.anims.create({
       key: `${this.asset}-stand`,

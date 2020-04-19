@@ -54,6 +54,7 @@ export class Player extends EventEmitter {
     emitter.stop()
 
     this.sprite = this.scene.physics.add.sprite(this.x, this.y, 'birb')
+    this.sprite.setDepth(100)
     // this.sprite.setCollideWorldBounds(true)
 
     this.scene.anims.create({
