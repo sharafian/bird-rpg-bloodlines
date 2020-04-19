@@ -1,6 +1,5 @@
 import { GameScene } from '../GameScene'
 import { Player } from './Player'
-import { Entity } from '../types/Entity'
 import { Npc } from './Npc'
 
 const CHASE_DISTANCE = 250
@@ -74,15 +73,8 @@ export class GroundPredator {
     const prey = this.scene.getPlayer()
 
     if (this.isClose(prey, CHASE_DISTANCE)) {
-<<<<<<< HEAD
       this.prowl()
     } else {
-=======
-      console.log("prowling")
-      this.prowl()
-    } else {
-      console.log("attacking")
->>>>>>> master
       this.attack(prey)
     }
   }
@@ -144,28 +136,16 @@ export class GroundPredator {
       this.sprite!.body.blocked.down // if the ground is changed to an image change blocked to touching
     ) {
       // && this.sprite.body.touching.down
-<<<<<<< HEAD
-=======
-      console.log('jump triggered')
->>>>>>> master
       this.jump()
       return
     } 
     
     if (preyPosition.x! > predatorPosition.x!) {
-<<<<<<< HEAD
-=======
-      console.log("this.runRight")
->>>>>>> master
       this.runRight()
       return
     } 
     
     if (preyPosition.x! < predatorPosition.x!) {
-<<<<<<< HEAD
-=======
-      console.log("this.runLeft")
->>>>>>> master
       this.runLeft()
       return
     }
