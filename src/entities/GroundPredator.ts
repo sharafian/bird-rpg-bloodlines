@@ -74,10 +74,8 @@ export class GroundPredator {
     const prey = this.scene.getPlayer()
 
     if (this.isClose(prey, CHASE_DISTANCE)) {
-      console.log("prowling")
       this.prowl()
     } else {
-      console.log("attacking")
       this.attack(prey)
     }
   }
@@ -139,19 +137,16 @@ export class GroundPredator {
       this.sprite!.body.blocked.down // if the ground is changed to an image change blocked to touching
     ) {
       // && this.sprite.body.touching.down
-      console.log('jump triggered')
       this.jump()
       return
     } 
     
     if (preyPosition.x! > predatorPosition.x!) {
-      console.log("this.runRight")
       this.runRight()
       return
     } 
     
     if (preyPosition.x! < predatorPosition.x!) {
-      console.log("this.runLeft")
       this.runLeft()
       return
     }
