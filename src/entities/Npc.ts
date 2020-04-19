@@ -115,4 +115,9 @@ export class Npc {
 
     return this.sprite
   }
+
+  die () {
+    console.log("npc died")
+    // unimplemented
+  }
 }
