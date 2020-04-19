@@ -25,7 +25,7 @@ export class Player extends EventEmitter {
       frameHeight: 12
     })
 
-    this.scene.load.spritesheet('birb', 'assets/birb4.png', {
+    this.scene.load.spritesheet('birb', 'assets/birb5.png', {
       frameWidth: BIRD_SIZE,
       frameHeight: BIRD_SIZE
     })
@@ -54,6 +54,7 @@ export class Player extends EventEmitter {
     emitter.stop()
 
     this.sprite = this.scene.physics.add.sprite(this.x, this.y, 'birb')
+    this.sprite.setDepth(100)
     // this.sprite.setCollideWorldBounds(true)
 
     this.scene.anims.create({
@@ -84,8 +85,27 @@ export class Player extends EventEmitter {
       })
     })
 
+    this.scene.anims.create({
+      key: 'pickup',
+      frameRate: 10,
+      frames: this.scene.anims.generateFrameNumbers('birb', {
+        frames: [ 5, 6, 7, 6, 5 ]
+      })
+    })
+
     this.cursors = this.scene.input.keyboard.createCursorKeys()
     const singButton = this.scene.input.keyboard.addKey('Z')
+    const pickupButton = this.scene.input.keyboard.addKey('X')
+
+    pickupButton.on('down', () => {
+      const onGround = this.sprite?.body.blocked.down
+      const isPickingUp = this.sprite?.anims.getCurrentKey() === 'pickup'
+      const isPlaying = this.sprite?.anims.isPlaying
+
+      if (onGround && (!isPickingUp || !isPlaying)) {
+        this.sprite!.anims.play('pickup')
+      }
+    })
 
     singButton.on('down', () => {
       if (this.lovin) {
@@ -126,6 +146,7 @@ export class Player extends EventEmitter {
 
     this.scene.events.on('shutdown', () => {
       singButton.removeAllListeners()
+      pickupButton.removeAllListeners()
       this.cursors?.up?.removeAllListeners()
       this.cursors?.down?.removeAllListeners()
       this.cursors?.left?.removeAllListeners()
@@ -193,6 +214,12 @@ export class Player extends EventEmitter {
 
   private getAnim (): string {
     if (!this.sprite) return 'stand'
+    if (
+      this.sprite.anims.getCurrentKey() === 'pickup' &&
+      !this.sprite.anims.isPaused
+    ) {
+      return 'pickup'
+    }
 
     if (this.isFlying()) return 'fly'
     if (this.sprite.body.velocity.x) return 'walk'

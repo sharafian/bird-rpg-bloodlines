@@ -1,11 +1,14 @@
 import { GameScene, BIRD_SIZE } from '../GameScene'
 
+const CARD_DISTANCE = 100
+
 export class Npc {
   private scene: GameScene
   private x: number
   private y: number
   private asset: string
   private sprite?: Phaser.Physics.Arcade.Sprite
+  private card?: Phaser.GameObjects.Sprite
   private heartEmitter?: Phaser.GameObjects.Particles.ParticleEmitter
 
   private facing = -1
@@ -21,6 +24,7 @@ export class Npc {
   preload () {
     // TODO: will this load the heart several times?
     this.scene.load.image('heart', 'assets/particles/heart.png')
+    this.scene.load.image('card', 'assets/twinderframe.png')
     this.scene.load.spritesheet(`${this.asset}-npc`, this.asset, {
       frameWidth: BIRD_SIZE,
       frameHeight: BIRD_SIZE
@@ -28,7 +32,15 @@ export class Npc {
   }
 
   create () {
+    this.facing = -1
+    this.lovin = false
+
     this.sprite = this.scene.physics.add.sprite(this.x, this.y, `${this.asset}-npc`)
+    this.sprite.setDepth(75)
+
+    this.card = this.scene.add.sprite(this.x, this.y - BIRD_SIZE / 2, 'card')
+    this.card.setDepth(150)
+
     this.scene.anims.create({
       key: `${this.asset}-stand`,
       frameRate: 0,
@@ -71,10 +83,19 @@ export class Npc {
     this.heartEmitter?.stop()
   }
 
+  private showCard () {
+    if (!this.sprite) return false
+    return Phaser.Math.Distance.BetweenPoints(this.scene.getPlayer().getSprite(), this.sprite) < CARD_DISTANCE
+  }
+
   update () {
-    if (!this.sprite) {
+    if (!this.sprite || !this.card) {
       return
     }
+
+    const { x, y } = this.sprite
+    this.card?.setPosition(x, y - this.card.height / 2 - BIRD_SIZE / 2)
+    this.card?.setVisible(this.showCard())
 
     // Don't move while you're gettin it on
     if (this.lovin) {

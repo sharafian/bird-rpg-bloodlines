@@ -53,7 +53,7 @@ export class MateScene extends Phaser.Scene {
     })
   }
 
-  update () {
-    this.components.forEach(c => c.update())
+  update (time: number, delta: number) {
+    this.components.forEach(c => c.update(time, delta))
   }
 }
