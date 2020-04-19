@@ -233,7 +233,7 @@ export class Player extends EventEmitter {
   }
 
   die () {
-    console.log("player died")
+    console.log('player died')
     // unimplemented
   }
 

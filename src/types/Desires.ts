@@ -1,4 +1,4 @@
-import { Item } from './types'
+import { Item } from './Item'
 
 export interface Desires {
   items: Item[]

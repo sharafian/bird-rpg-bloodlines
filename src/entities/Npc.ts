@@ -1,4 +1,7 @@
 import { GameScene, BIRD_SIZE } from '../GameScene'
+import { Traits } from '../types/Traits'
+import { Desires } from '../types/Desires'
+import { generateTraits, generateDesires } from '../lib/Desirability'
 
 const CARD_DISTANCE = 100
 
@@ -10,15 +13,23 @@ export class Npc {
   private sprite?: Phaser.Physics.Arcade.Sprite
   private card?: Phaser.GameObjects.Sprite
   private heartEmitter?: Phaser.GameObjects.Particles.ParticleEmitter
+  private traits: Traits
+  private desires: Desires
 
   private facing = -1
   private lovin = false
 
-  constructor (scene: GameScene, x: number, y: number, asset: string) {
+  constructor ({ scene, x, y, asset }: {
+    scene: GameScene,
+    x: number,
+    y: number,
+    asset: string
+  }) {
     this.scene = scene
     this.x = x
     this.y = y
     this.asset = asset
+
   }
 
   preload () {
@@ -138,7 +149,7 @@ export class Npc {
   }
 
   die () {
-    console.log("npc died")
+    console.log('npc died')
     // unimplemented
   }
 }

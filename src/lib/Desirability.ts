@@ -6,12 +6,13 @@ import { Item, ITEM_WEIGHT, ItemTypes } from '../types/Item'
 const MARGIN_OF_VARIATION = MAX_VALUE / 8
 
 function randInt (min: number, max: number): number {
-  const min = Math.ceil(min)
-  const max = Math.floor(max)
+  min = Math.ceil(min)
+  max = Math.floor(max)
   // The maximum is exclusive and the minimum is inclusive
   return Math.floor(Math.random() * (max - min)) + min
 }
 
+// generates NPC Desires based on their given Traits
 export function generateDesires (traits: Traits): Desires {
   // int of maximum number of items that are possible to carry
   const maxDesiredItemsPossible = Math.floor(MAX_VALUE / ITEM_WEIGHT)
@@ -41,5 +42,17 @@ export function generateDesires (traits: Traits): Desires {
   }
 }
 
-// takes the traits of the character and generates a bird with 
-export function generateTraits (traits: )
+// takes the generation number and generates
+// appropriate stats for an NPC in that level
+export function generateTraits (generationNum: number): Traits {
+  return {
+    speed: randInt(
+      MARGIN_OF_VARIATION * generationNum,
+      MARGIN_OF_VARIATION * (generationNum + 1)
+    ),
+    beauty: randInt(
+      MARGIN_OF_VARIATION * generationNum,
+      MARGIN_OF_VARIATION * (generationNum + 1)
+    )
+  }
+}
