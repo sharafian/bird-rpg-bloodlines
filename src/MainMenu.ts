@@ -17,7 +17,7 @@ export class MainMenu extends Phaser.Scene {
   create () {
     const headerStyle = {
       color: 'white',
-      fontSize: '48px'
+      fontSize: '36px'
     }
 
     const itemStyle = {
