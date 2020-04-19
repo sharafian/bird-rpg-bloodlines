@@ -17,7 +17,7 @@ export class MainMenu extends Phaser.Scene {
   create () {
     const headerStyle = {
       color: 'white',
-      fontSize: '48px'
+      fontSize: '36px'
     }
 
     const itemStyle = {
@@ -60,6 +60,14 @@ export class MainMenu extends Phaser.Scene {
 
     enterKey.on('up', () => {
       this.scene.start(this.menuItems[this.selection].scene)
+    })
+
+    this.events.on('shutdown', () => {
+      enterKey.removeAllListeners()
+      cursors.up?.removeAllListeners()
+      cursors.down?.removeAllListeners()
+      cursors.left?.removeAllListeners()
+      cursors.right?.removeAllListeners()
     })
   }
 }

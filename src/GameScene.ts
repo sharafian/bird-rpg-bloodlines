@@ -2,9 +2,10 @@ import Phaser from 'phaser'
 
 import { Npc } from './entities/Npc'
 import { Player } from './entities/Player'
-import { Entity } from './types/Entity'
+import { GroundPredator } from './entities/GroundPredator'
+import { PhysicsEntity } from './types/Entity'
 
-export const BIRD_SIZE = 50
+export const BIRD_SIZE = 32
 export const MATING_RANGE = 150
 
 export const TILE_SIZE = 32
@@ -12,27 +13,51 @@ export const TILE_SIZE = 32
 export class GameScene extends Phaser.Scene {
   private player = new Player(this, 20, 20)
   private NPCs = [
-    new Npc(this, 50, 50, 'assets/bluebird.png'),
-    new Npc(this, 100, 50, 'assets/redbird.png')
+    new Npc(this, 445, 425, 'assets/birb6.png'),
+    new Npc(this, 1200, 50, 'assets/birb6.png')
   ]
 
-  private entities: Entity[] = [ ...this.NPCs, this.player ]
+  private predators = [
+    new GroundPredator(this, 1400, 700, 'assets/cat2.png', 64)
+  ]
+
+  private entities: PhysicsEntity[] = [ ...this.NPCs, ...this.predators, this.player ]
+  private scheduledFadeout = false
+  private map?: Phaser.Tilemaps.Tilemap
 
   constructor () {
     super('game-scene')
   }
 
   preload () {
-    this.load.tilemapCSV('environment_map', 'assets/environment.csv')
-    this.load.image('environment_tiles', 'assets/environment.png')
+    this.load.tilemapCSV('environment_map', 'assets/environment2.csv')
+    this.load.image('environment_tiles_extruded', 'assets/environment_extruded.png')
 
     this.entities.forEach((ent) => ent.preload())
+
+    this.load.audio('theme', [
+      'assets/audio/bird_trap_wip.mp3'
+  ]);
+  }
+
+  onFade (_: Phaser.Cameras.Scene2D.Camera, progress: number) {
+    if (progress === 1) {
+      this.scene.start('mating-scene')
+    }
   }
 
   create () {
     this.entities.forEach((ent) => ent.create())
+    // todo: get this.physics.add.overlap(player, predators) working
 
     this.createEnvironment()
+    
+    var music = this.sound.add('theme');
+
+    music.play()
+    this.events.on('shutdown', () => {
+      music.stop()
+    })
 
     this.player.on('start_singing', () => {
       const mate = this.closestBirb()
@@ -40,27 +65,44 @@ export class GameScene extends Phaser.Scene {
       if (mate) {
         this.player.startLovin()
         mate.startLovin()
+        setTimeout(() => {
+          this.scheduleFadeout()
+        }, 1000)
       }
     })
   }
 
   createEnvironment () {
-    const playerSprite = this.player.getSprite()
+    this.map = this.make.tilemap({ key: 'environment_map', tileWidth: TILE_SIZE, tileHeight: TILE_SIZE })
+    const groundTileset = this.map.addTilesetImage('environment_tiles', 'environment_tiles_extruded', 32, 32, 1, 2)
+    const layer = this.map.createStaticLayer(0, groundTileset, 0, 0)
 
-    const map = this.make.tilemap({ key: 'environment_map', tileWidth: TILE_SIZE, tileHeight: TILE_SIZE })
-    const ground_tileset = map.addTilesetImage('environment_tiles')
-    const layer = map.createStaticLayer(0, ground_tileset, 0, 0)
-    
-    layer.setCollisionBetween(0, 0)    
-    this.physics.add.collider(playerSprite, layer)
+    layer.setCollision([2, 8, 16, 22, 24, 44, 48])
+    this.entities.forEach(ent => {
+      this.physics.add.collider(ent.getSprite(), layer)
+    })
 
-    this.cameras.main.startFollow(playerSprite, true, 0.1, 0.1)
-    this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels)
+    this.cameras.main.startFollow(this.player.getSprite(), true, 0.1, 0.1)
+    this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels)
     this.cameras.main.setBackgroundColor('#a6dbed')
   }
 
-  update () {
-    this.entities.forEach((ent) => ent.update())
+  private scheduleFadeout () {
+    this.scheduledFadeout = true
+  }
+
+  update (time: number, delta: number) {
+    if (this.scheduledFadeout && this.map) {
+      this.scheduledFadeout = false
+
+      // don't try this at home, kids
+      ;(this.cameras.main as any)._cw = this.map.widthInPixels
+      ;(this.cameras.main as any)._ch = this.map.heightInPixels
+
+      this.cameras.main.fadeOut(3000, 0, 0, 0, this.onFade.bind(this))
+    }
+
+    this.entities.forEach((ent) => ent.update(time, delta))
   }
 
   public closestBirb (): Npc | void {
@@ -88,5 +130,9 @@ export class GameScene extends Phaser.Scene {
     return distance > MATING_RANGE
       ? undefined
       : closest
+  }
+
+  getPlayer () {
+    return this.player
   }
 }

@@ -3,15 +3,16 @@ import Phaser from 'phaser'
 import { GameScene } from './GameScene'
 import { AboutMenu } from './AboutMenu'
 import { MainMenu } from './MainMenu'
+import { MateScene } from './MateScene'
 
 const ZOOM = 1
 
 const config = {
   type: Phaser.AUTO,
   pixelArt: true,
-  
+
   scale: {
-    mode: Phaser.Scale.FIT,
+    mode: Phaser.Scale.NONE,
     autoCenter: Phaser.Scale.CENTER_BOTH,
     width: 640,
     height: 480,
@@ -28,7 +29,7 @@ const config = {
       debug: false
     }
   },
-  scene: [ MainMenu, GameScene, AboutMenu ]
+  scene: [ MainMenu, GameScene, AboutMenu, MateScene ]
 }
 
 const game = new Phaser.Game(config)
