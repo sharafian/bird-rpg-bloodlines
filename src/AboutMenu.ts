@@ -38,7 +38,7 @@ export class AboutMenu extends Phaser.Scene {
     })
 
     this.events.on('shutdown', () => {
-      enterKey.destroy()
+      enterKey.removeAllListeners()
     })
   }
 }

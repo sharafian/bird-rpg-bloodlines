@@ -82,7 +82,7 @@ export class Npc {
       return
     }
 
-    const rand = Math.random();
+    const rand = Math.random()
     // small chance to change direction
     // medium chance to move in facing direction
     // large chance to do nothing

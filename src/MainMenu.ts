@@ -63,11 +63,11 @@ export class MainMenu extends Phaser.Scene {
     })
 
     this.events.on('shutdown', () => {
-      enterKey.destroy()
-      cursors.up?.destroy()
-      cursors.down?.destroy()
-      cursors.left?.destroy()
-      cursors.right?.destroy()
+      enterKey.removeAllListeners()
+      cursors.up?.removeAllListeners()
+      cursors.down?.removeAllListeners()
+      cursors.left?.removeAllListeners()
+      cursors.right?.removeAllListeners()
     })
   }
 }
