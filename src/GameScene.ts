@@ -32,6 +32,10 @@ export class GameScene extends Phaser.Scene {
     this.load.image('environment_tiles', 'assets/environment2.png')
 
     this.entities.forEach((ent) => ent.preload())
+
+    this.load.audio('theme', [
+      'assets/audio/bird_trap_wip.mp3'
+  ]);
   }
 
   onFade (_: Phaser.Cameras.Scene2D.Camera, progress: number) {
@@ -45,6 +49,10 @@ export class GameScene extends Phaser.Scene {
     // todo: get this.physics.add.overlap(player, predators) working
 
     this.createEnvironment()
+    
+    var music = this.sound.add('theme');
+
+    music.play()
 
     this.player.on('start_singing', () => {
       const mate = this.closestBirb()
