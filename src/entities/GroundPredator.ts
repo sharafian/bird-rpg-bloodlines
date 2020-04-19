@@ -145,7 +145,7 @@ export class GroundPredator {
     // small chance to change direction
     // medium chance to move in facing direction
     // large chance to do nothing
-    if (rand > 0 && rand <= 0.05) {
+    if (rand > 0 && rand <= 0.02) {
       this.facing = this.facing < 0 ? 1 : -1
     } else {
       this.sprite!.setVelocityX(this.facing * 0.25 * this.size)
