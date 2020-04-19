@@ -69,6 +69,7 @@ export class Npc {
     this.sprite.setDebug(true, true, 0x00ff00)
 
     const hearticles = this.scene.add.particles('heart')
+    hearticles.setDepth(76)
     this.heartEmitter = hearticles.createEmitter({
       lifespan: 1000,
       speed: { min: 25, max: 50 },
@@ -89,7 +90,7 @@ export class Npc {
 
     this.heartEmitter.start()
     this.heartEmitter.setPosition(
-      this.sprite.x + BIRD_SIZE + this.facing * BIRD_SIZE / 2,
+      this.sprite.x + BIRD_SIZE + (this.facing > 0 ? BIRD_SIZE / 2 : 0),
       this.sprite.y + BIRD_SIZE / 2)
   }
 
