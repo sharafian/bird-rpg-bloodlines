@@ -119,6 +119,14 @@ export class Player extends EventEmitter {
       this.singing = false
       emitter.stop()
     })
+
+    this.scene.events.on('shutdown', () => {
+      singButton.destroy()
+      this.cursors?.up?.destroy()
+      this.cursors?.down?.destroy()
+      this.cursors?.left?.destroy()
+      this.cursors?.right?.destroy()
+    })
   }
 
   startLovin () {

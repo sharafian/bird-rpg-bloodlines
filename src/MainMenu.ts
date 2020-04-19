@@ -61,5 +61,13 @@ export class MainMenu extends Phaser.Scene {
     enterKey.on('up', () => {
       this.scene.start(this.menuItems[this.selection].scene)
     })
+
+    this.events.on('shutdown', () => {
+      enterKey.destroy()
+      cursors.up?.destroy()
+      cursors.down?.destroy()
+      cursors.left?.destroy()
+      cursors.right?.destroy()
+    })
   }
 }
