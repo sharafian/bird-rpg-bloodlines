@@ -1,6 +1,5 @@
 import { GameScene, BIRD_SIZE } from '../GameScene'
 
-const CARD_DISTANCE = 100
 const CARD_MARGIN = 15
 
 export class Npc {
@@ -9,7 +8,6 @@ export class Npc {
   private y: number
   private asset: string
   private sprite?: Phaser.Physics.Arcade.Sprite
-  private outline?: Phaser.GameObjects.Sprite
   private card?: Phaser.GameObjects.Sprite
   private heartEmitter?: Phaser.GameObjects.Particles.ParticleEmitter
 

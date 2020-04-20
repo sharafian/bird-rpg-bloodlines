@@ -5,6 +5,7 @@ import { EventEmitter } from 'events'
 export class Player extends EventEmitter {
   private sprite?: Phaser.Physics.Arcade.Sprite
   private cursors?: Phaser.Types.Input.Keyboard.CursorKeys
+  private bloodEmitter?: Phaser.GameObjects.Particles.ParticleEmitter
 
   private flapping = false
   private singing = false
@@ -20,6 +21,11 @@ export class Player extends EventEmitter {
   }
 
   preload () {
+    this.scene.load.spritesheet('blood', 'assets/particles/blood.png', {
+      frameWidth: 12,
+      frameHeight: 12
+    })
+
     this.scene.load.spritesheet('notes', 'assets/particles/notes.png', {
       frameWidth: 12,
       frameHeight: 12
@@ -38,6 +44,7 @@ export class Player extends EventEmitter {
     this.facing = 1
 
     const noteParticles = this.scene.add.particles('notes')
+    noteParticles.setDepth(100)
     const emitter = noteParticles.createEmitter({
       frame: [ 0, 1, 2, 3, 4, 5, 6, 7 ],
       x: 40,
@@ -51,6 +58,22 @@ export class Player extends EventEmitter {
       frequency: 150
     })
 
+    const bloodParticles = this.scene.add.particles('blood')
+    bloodParticles.setDepth(100)
+    this.bloodEmitter = bloodParticles.createEmitter({
+      frame: [ 5 ],
+      x: 0,
+      y: 0,
+      lifespan: 1000,
+      rotate: { min: 0, max: 360 },
+      speed: { min: 100, max: 200 },
+      angle: { min: 0, max: 360 },
+      gravityY: 500,
+      quantity: 5,
+      frequency: 100
+    })
+
+    this.bloodEmitter.stop()
     emitter.stop()
 
     this.sprite = this.scene.physics.add.sprite(this.x, this.y, 'birb')
@@ -160,6 +183,14 @@ export class Player extends EventEmitter {
 
   stopLovin () {
     this.lovin = false
+  }
+
+  deathAnimation () {
+    if (!this.sprite || !this.bloodEmitter) return
+
+    const { x, y } = this.sprite.getCenter()
+    this.bloodEmitter.explode(20, x, y)
+    this.sprite.setVisible(false)
   }
 
   update () {
