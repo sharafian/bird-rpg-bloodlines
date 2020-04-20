@@ -3,7 +3,8 @@ import Phaser from 'phaser'
 import { Npc } from './entities/Npc'
 import { Player } from './entities/Player'
 import { GroundPredator } from './entities/GroundPredator'
-import { PhysicsEntity } from './types/Entity'
+import { PhysicsEntity, Entity } from './types/Entity'
+import { MinimapCamera } from './components/MinimapCamera'
 
 export const BIRD_SIZE = 32
 export const MATING_RANGE = 150
@@ -11,16 +12,24 @@ export const MATING_RANGE = 150
 export const TILE_SIZE = 32
 
 export class GameScene extends Phaser.Scene {
-  private player = new Player(this, 20, 20)
+  private nextScene = ''
+  private player = new Player(this, 2000, 4000)
+  private miniCamera = new MinimapCamera(this, 20, 20)
   private NPCs = [
-    new Npc(this, 445, 425, 'assets/birb6.png'),
-    new Npc(this, 1200, 50, 'assets/birb6.png')
+    new Npc({ scene: this, x: 445, y: 4000, asset: 'assets/birb7.png' }),
+    new Npc({ scene: this, x: 1200, y: 4000, asset: 'assets/birb7.png' })
   ]
-
   private predators = [
-    new GroundPredator(this, 1400, 700, 'assets/cat2.png', 64)
+    new GroundPredator({
+      scene: this,
+      x: 1400,
+      y: 4000,
+      asset: 'assets/cat2.png',
+      size: 64
+    })
   ]
 
+  private components: Entity[] = [ this.miniCamera ]
   private entities: PhysicsEntity[] = [ ...this.NPCs, ...this.predators, this.player ]
   private scheduledFadeout = false
   private map?: Phaser.Tilemaps.Tilemap
@@ -30,33 +39,46 @@ export class GameScene extends Phaser.Scene {
   }
 
   preload () {
-    this.load.tilemapCSV('environment_map', 'assets/environment2.csv')
+    this.load.tilemapCSV('environment_map', 'assets/map3.csv')
     this.load.image('environment_tiles_extruded', 'assets/environment_extruded.png')
 
     this.entities.forEach((ent) => ent.preload())
+    this.components.forEach((ent) => ent.preload())
 
     this.load.audio('theme', [
       'assets/audio/bird_trap_wip.mp3'
-  ]);
+    ])
   }
 
   onFade (_: Phaser.Cameras.Scene2D.Camera, progress: number) {
     if (progress === 1) {
-      this.scene.start('mating-scene')
+      this.scene.start(this.nextScene)
     }
   }
 
   create () {
     this.entities.forEach((ent) => ent.create())
+    this.components.forEach((ent) => ent.create())
     // todo: get this.physics.add.overlap(player, predators) working
 
     this.createEnvironment()
-    
-    var music = this.sound.add('theme');
+
+    const music = this.sound.add('theme')
 
     music.play()
     this.events.on('shutdown', () => {
       music.stop()
+    })
+
+    const enemies = this.physics.add.group()
+    this.predators.forEach(p => p.addToGroup(enemies))
+    this.physics.add.collider(this.player.getSprite(), enemies, () => {
+      if (!this.player.dead) {
+        this.player.die()
+        setTimeout(() => {
+          this.scheduleFadeout('main-menu')
+        }, 1000)
+      }
     })
 
     this.player.on('start_singing', () => {
@@ -66,7 +88,7 @@ export class GameScene extends Phaser.Scene {
         this.player.startLovin()
         mate.startLovin()
         setTimeout(() => {
-          this.scheduleFadeout()
+          this.scheduleFadeout('mating-scene')
         }, 1000)
       }
     })
@@ -87,7 +109,8 @@ export class GameScene extends Phaser.Scene {
     this.cameras.main.setBackgroundColor('#a6dbed')
   }
 
-  private scheduleFadeout () {
+  private scheduleFadeout (nextScene: string) {
+    this.nextScene = nextScene
     this.scheduledFadeout = true
   }
 
@@ -99,10 +122,16 @@ export class GameScene extends Phaser.Scene {
       ;(this.cameras.main as any)._cw = this.map.widthInPixels
       ;(this.cameras.main as any)._ch = this.map.heightInPixels
 
-      this.cameras.main.fadeOut(3000, 0, 0, 0, this.onFade.bind(this))
+      this.cameras.main.fadeOut(1000, 0, 0, 0, this.onFade.bind(this))
+    }
+
+    const closest = this.closestBirb()
+    if (closest) {
+      closest.setShowOutline()
     }
 
     this.entities.forEach((ent) => ent.update(time, delta))
+    this.components.forEach((ent) => ent.update(time, delta))
   }
 
   public closestBirb (): Npc | void {
