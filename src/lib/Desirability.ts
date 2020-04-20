@@ -23,8 +23,11 @@ export function generateDesires (traits: Traits): Desires {
   )
   // float between (0, 1]
   const normalizedBeautyScore = (traits.beauty + beautyVariation) / MAX_VALUE
-  const numDesiredItems = Math.floor(
-    maxDesiredItemsPossible * normalizedBeautyScore
+  const numDesiredItems = Math.max(
+    Math.floor(
+      maxDesiredItemsPossible * normalizedBeautyScore
+    ),
+    0
   )
   const desiredItems = [...Array(numDesiredItems)].map(() => {
     return ItemTypes[randInt(0, ItemTypes.length)]
@@ -34,7 +37,10 @@ export function generateDesires (traits: Traits): Desires {
     -1 * MARGIN_OF_VARIATION,
     MARGIN_OF_VARIATION + 1
   )
-  const desiredBeautyScore = traits.speed + speedVariation
+  const desiredBeautyScore = Math.max(
+    traits.speed + speedVariation,
+    0
+  )
 
   return {
     items: desiredItems,

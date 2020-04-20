@@ -70,13 +70,16 @@ export class Npc {
         left: 5
       }
     }
+    const textCoords = this.card.getTopLeft(undefined, true)
+    console.log('cardTextCoords', textCoords)
     this.cardText = this.scene.add.text(
-      this.cardTextCoords().x,
-      this.cardTextCoords().y,
+      textCoords.x,
+      textCoords.y,
       this.cardTextContent(),
       textStyle
     )
     this.cardText.setDepth(151)
+    this.cardText.setScrollFactor(0)
 
     this.scene.anims.create({
       key: `${this.asset}-stand`,
@@ -135,39 +138,37 @@ export class Npc {
     this.showOutline = true
   }
 
-  private cardTextCoords (): Phaser.Math.Vector2 {
-    return this.card?.getTopLeft(undefined, true)
-      || new Phaser.Math.Vector2()
-  }
-
   private cardTextContent (): string {
     return (
-      `Has...\n
+      `\n
 Beauty: ${this.traits.beauty}\n
 Speed: ${this.traits.speed}\n
 \n
 Wants...\n
 Beauty: >=${this.desires.minBeauty}\n
-Items: ${this.desires.items.reduce((acc, cur) => (acc + cur.name + ' '), '')}`
+Items: ${
+  this.desires.items[0] ?
+  this.desires.items.reduce((acc, cur) => (acc + cur.name + ' '), '') :
+  'none'
+}`
     )
   }
 
   update () {
-    if (!this.sprite || !this.card) {
+    if (!this.sprite || !this.card || !this.cardText) {
       return
     }
 
     if (this.showOutline) {
       this.showOutline = false
       this.card.setVisible(true)
-	  this.cardText.setVisible(true)
+	    this.cardText.setVisible(true)
       this.sprite.anims.play(`${this.asset}-outline`)
     } else {
       this.card.setVisible(false)
-	  this.cardText.setVisible(false)
+	    this.cardText.setVisible(false)
       this.sprite.anims.play(`${this.asset}-stand`)
     }
-
 
     // Don't move while you're gettin it on
     if (this.lovin) {
