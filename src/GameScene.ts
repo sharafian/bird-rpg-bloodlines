@@ -57,11 +57,17 @@ export class GameScene extends Phaser.Scene {
 
     this.createEnvironment()
 
-    var music = this.sound.add('theme');
+    const music = this.sound.add('theme')
 
     music.play()
     this.events.on('shutdown', () => {
       music.stop()
+    })
+
+    const enemies = this.physics.add.group()
+    this.predators.forEach(p => p.addToGroup(enemies))
+    this.physics.add.collider(this.player.getSprite(), enemies, () => {
+      this.player.die()
     })
 
     this.player.on('start_singing', () => {

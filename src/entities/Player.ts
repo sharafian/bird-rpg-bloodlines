@@ -10,6 +10,7 @@ export class Player extends EventEmitter {
   private flapping = false
   private singing = false
   private lovin = false
+  private dead = false
   private facing = 1
 
   constructor (
@@ -125,7 +126,7 @@ export class Player extends EventEmitter {
       const isPickingUp = this.sprite?.anims.getCurrentKey() === 'pickup'
       const isPlaying = this.sprite?.anims.isPlaying
 
-      if (onGround && (!isPickingUp || !isPlaying)) {
+      if (!this.dead && onGround && (!isPickingUp || !isPlaying)) {
         this.sprite!.anims.play('pickup')
       }
     })
@@ -139,7 +140,7 @@ export class Player extends EventEmitter {
       const vx = this.sprite?.body.velocity.x
       const stopped = vy === 0 && vx === 0
 
-      if (this.sprite && stopped) {
+      if (!this.dead && this.sprite && stopped) {
         this.singing = true
 
         emitter.setEmitterAngle({
@@ -185,7 +186,7 @@ export class Player extends EventEmitter {
     this.lovin = false
   }
 
-  deathAnimation () {
+  private deathAnimation () {
     if (!this.sprite || !this.bloodEmitter) return
 
     const { x, y } = this.sprite.getCenter()
@@ -198,7 +199,7 @@ export class Player extends EventEmitter {
       return
     }
 
-    if (this.singing) {
+    if (this.singing || this.dead) {
       this.sprite.setVelocityX(0)
       return
     }
@@ -264,8 +265,11 @@ export class Player extends EventEmitter {
   }
 
   die () {
-    console.log("player died")
-    // unimplemented
+    if (!this.dead) {
+      this.deathAnimation()
+    }
+
+    this.dead = true
   }
 
   getSprite () {
