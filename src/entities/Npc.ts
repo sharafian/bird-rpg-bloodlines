@@ -3,7 +3,6 @@ import { Traits } from '../types/Traits'
 import { Desires } from '../types/Desires'
 import { generateTraits, generateDesires } from '../lib/Desirability'
 
-const CARD_DISTANCE = 100
 const CARD_MARGIN = 15
 
 export class Npc {
@@ -12,7 +11,6 @@ export class Npc {
   private y: number
   private asset: string
   private sprite?: Phaser.Physics.Arcade.Sprite
-  private outline?: Phaser.GameObjects.Sprite
   private card?: Phaser.GameObjects.Sprite
   private cardText?: Phaser.GameObjects.Text
   private heartEmitter?: Phaser.GameObjects.Particles.ParticleEmitter

@@ -231,4 +231,9 @@ export class GroundPredator {
     if (vx) return `${this.asset}-walk`
     else return `${this.asset}-stand`
   }
+
+  addToGroup (group: Phaser.Physics.Arcade.Group) {
+    if (!this.sprite) throw new Error('no sprite')
+    group.add(this.sprite)
+  }
 }
