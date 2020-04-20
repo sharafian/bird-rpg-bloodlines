@@ -10,7 +10,7 @@ export class Player extends EventEmitter {
   private flapping = false
   private singing = false
   private lovin = false
-  private dead = false
+  public dead = false
   private facing = 1
 
   constructor (
@@ -43,6 +43,7 @@ export class Player extends EventEmitter {
     this.singing = false
     this.lovin = false
     this.facing = 1
+    this.dead = false
 
     const noteParticles = this.scene.add.particles('notes')
     noteParticles.setDepth(100)

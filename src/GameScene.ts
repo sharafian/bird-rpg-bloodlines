@@ -12,6 +12,7 @@ export const MATING_RANGE = 150
 export const TILE_SIZE = 32
 
 export class GameScene extends Phaser.Scene {
+  private nextScene = ''
   private player = new Player(this, 2000, 4000)
   private miniCamera = new MinimapCamera(this, 20, 20)
   private NPCs = [
@@ -46,7 +47,7 @@ export class GameScene extends Phaser.Scene {
 
   onFade (_: Phaser.Cameras.Scene2D.Camera, progress: number) {
     if (progress === 1) {
-      this.scene.start('mating-scene')
+      this.scene.start(this.nextScene)
     }
   }
 
@@ -67,7 +68,12 @@ export class GameScene extends Phaser.Scene {
     const enemies = this.physics.add.group()
     this.predators.forEach(p => p.addToGroup(enemies))
     this.physics.add.collider(this.player.getSprite(), enemies, () => {
-      this.player.die()
+      if (!this.player.dead) {
+        this.player.die()
+        setTimeout(() => {
+          this.scheduleFadeout('main-menu')
+        }, 1000)
+      }
     })
 
     this.player.on('start_singing', () => {
@@ -77,7 +83,7 @@ export class GameScene extends Phaser.Scene {
         this.player.startLovin()
         mate.startLovin()
         setTimeout(() => {
-          this.scheduleFadeout()
+          this.scheduleFadeout('mating-scene')
         }, 1000)
       }
     })
@@ -98,7 +104,8 @@ export class GameScene extends Phaser.Scene {
     this.cameras.main.setBackgroundColor('#a6dbed')
   }
 
-  private scheduleFadeout () {
+  private scheduleFadeout (nextScene: string) {
+    this.nextScene = nextScene
     this.scheduledFadeout = true
   }
 
