@@ -122,7 +122,7 @@ export class GameScene extends Phaser.Scene {
       ;(this.cameras.main as any)._cw = this.map.widthInPixels
       ;(this.cameras.main as any)._ch = this.map.heightInPixels
 
-      this.cameras.main.fadeOut(3000, 0, 0, 0, this.onFade.bind(this))
+      this.cameras.main.fadeOut(1000, 0, 0, 0, this.onFade.bind(this))
     }
 
     const closest = this.closestBirb()
