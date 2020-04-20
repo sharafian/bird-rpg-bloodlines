@@ -5,7 +5,7 @@ import { Item, ITEM_WEIGHT, ItemTypes } from '../types/Item'
 
 const MARGIN_OF_VARIATION = MAX_VALUE / 8
 
-function randInt (min: number, max: number): number {
+export function randInt (min: number, max: number): number {
   min = Math.ceil(min)
   max = Math.floor(max)
   // The maximum is exclusive and the minimum is inclusive

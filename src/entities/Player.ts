@@ -1,8 +1,11 @@
 import Phaser from 'phaser'
 import { BIRD_SIZE } from '../GameScene'
 import { EventEmitter } from 'events'
+import { Traits } from '../types/Traits'
+import { Item } from '../types/Item'
 
 export class Player extends EventEmitter {
+  public type = 'player'
   private sprite?: Phaser.Physics.Arcade.Sprite
   private cursors?: Phaser.Types.Input.Keyboard.CursorKeys
   private bloodEmitter?: Phaser.GameObjects.Particles.ParticleEmitter
@@ -12,11 +15,13 @@ export class Player extends EventEmitter {
   private lovin = false
   public dead = false
   private facing = 1
+  private inventory = [] as Item[]
 
   constructor (
     private scene: Phaser.Scene,
     private x: number,
-    private y: number
+    private y: number,
+    private traits: Traits
   ) {
     super()
   }
@@ -129,6 +134,7 @@ export class Player extends EventEmitter {
       const isPlaying = this.sprite?.anims.isPlaying
 
       if (!this.dead && onGround && (!isPickingUp || !isPlaying)) {
+        this.emit('pickup')
         this.sprite!.anims.play('pickup')
       }
     })
@@ -272,6 +278,13 @@ export class Player extends EventEmitter {
     }
 
     this.dead = true
+  }
+
+  addItem (item: Item) {
+    if (this.inventory.length >= this.traits.speed) {
+      this.emit('drop', this.inventory.shift())
+    }
+    this.inventory.push(item)
   }
 
   getSprite () {

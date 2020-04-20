@@ -8,4 +8,5 @@ export interface Entity {
 
 export interface PhysicsEntity extends Entity {
   getSprite (): Phaser.Physics.Arcade.Sprite
+  type: string
 }

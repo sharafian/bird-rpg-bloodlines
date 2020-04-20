@@ -8,6 +8,7 @@ const JUMP_POWER = 400
 const BEHAVIOR_TICK = 200
 
 export class GroundPredator {
+  public type = 'ground-predator'
   private scene: GameScene
   private x: number
   private y: number

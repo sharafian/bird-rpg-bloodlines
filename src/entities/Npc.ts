@@ -6,6 +6,7 @@ import { generateTraits, generateDesires } from '../lib/Desirability'
 const CARD_MARGIN = 15
 
 export class Npc {
+  public type = 'npc'
   private scene: GameScene
   private x: number
   private y: number
