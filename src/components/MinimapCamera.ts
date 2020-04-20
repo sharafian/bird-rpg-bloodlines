@@ -4,8 +4,8 @@ import { GameScene } from '../GameScene'
 const BORDER = 1
 const WIDTH = 150
 const HEIGHT = 80
-const MAP_WIDTH = 300 * 32
-const MAP_HEIGHT = 160 * 32
+export const MAP_WIDTH = 300 * 32
+export const MAP_HEIGHT = 160 * 32
 
 export class MinimapCamera {
   private camera?: Phaser.Cameras.Scene2D.Camera

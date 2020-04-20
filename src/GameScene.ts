@@ -2,9 +2,15 @@ import Phaser from 'phaser'
 
 import { Npc } from './entities/Npc'
 import { Player } from './entities/Player'
+import { ItemEntity } from './entities/Item'
 import { GroundPredator } from './entities/GroundPredator'
 import { PhysicsEntity, Entity } from './types/Entity'
-import { MinimapCamera } from './components/MinimapCamera'
+import {
+  MAP_WIDTH,
+  MinimapCamera
+} from './components/MinimapCamera'
+import { randInt, generateTraits } from './lib/Desirability'
+import { ItemTypes } from './types/Item'
 
 export const BIRD_SIZE = 32
 export const MATING_RANGE = 150
@@ -13,12 +19,21 @@ export const TILE_SIZE = 32
 
 export class GameScene extends Phaser.Scene {
   private nextScene = ''
-  private player = new Player(this, 2000, 4000)
+  private player = new Player(this, 2000, 4000, generateTraits(1))
   private miniCamera = new MinimapCamera(this, 20, 20)
   private NPCs = [
     new Npc({ scene: this, x: 445, y: 4000, asset: 'assets/birb7.png' }),
     new Npc({ scene: this, x: 1200, y: 4000, asset: 'assets/birb7.png' })
   ]
+  // generate 10 random items around the map
+  private items = [...Array(10)].map(() => {
+    return new ItemEntity(
+      this,
+      randInt(0, MAP_WIDTH),
+      4000,
+      ItemTypes[randInt(0, ItemTypes.length)]
+    )
+  })
   private predators = [
     new GroundPredator({
       scene: this,
@@ -30,7 +45,12 @@ export class GameScene extends Phaser.Scene {
   ]
 
   private components: Entity[] = [ this.miniCamera ]
-  private entities: PhysicsEntity[] = [ ...this.NPCs, ...this.predators, this.player ]
+  private entities: PhysicsEntity[] = [
+    ...this.NPCs,
+    ...this.predators,
+    ...this.items,
+    this.player
+  ]
   private scheduledFadeout = false
   private map?: Phaser.Tilemaps.Tilemap
 
@@ -81,7 +101,7 @@ export class GameScene extends Phaser.Scene {
     })
 
     this.player.on('start_singing', () => {
-      const mate = this.closestBirb()
+      const mate = this.closestEntity('npc').entity as Npc
 
       if (mate) {
         this.player.startLovin()
@@ -90,6 +110,47 @@ export class GameScene extends Phaser.Scene {
           this.scheduleFadeout('mating-scene')
         }, 1000)
       }
+    })
+
+    this.player.on('pickup', () => {
+      // the index of the entity as it appears in a list of only items
+      const {
+        entity: item = undefined,
+        index: itemIndex = 0
+      } = this.closestEntity('item') as { entity: ItemEntity, index: number }
+
+      if (item) {
+        item.getSprite().setVisible(false)
+        this.player.addItem(item.itemType)
+        // we remove the item from this.items
+        this.items = this.items.filter((_, idx) => idx !== itemIndex)
+        // we also need to remove the item from this.entities
+        let itemsSeen = 0
+        let itemToSplice
+        for (const e in this.entities) {
+          if (this.entities[e].type === 'item') {
+            itemsSeen++
+          }
+          if (itemsSeen >= itemIndex + 1) {
+            itemToSplice = parseInt(e, 10)
+            break
+          }
+        }
+        if (itemToSplice) {
+          this.entities.splice(itemToSplice, 1)
+        }
+      }
+    })
+
+    this.player.on('drop', (item) => {
+      const newItem = new ItemEntity(
+        this,
+        this.player.getPosition().x,
+        this.player.getPosition().y,
+        item
+      )
+      this.items.push(newItem)
+      newItem.create()
     })
   }
 
@@ -100,7 +161,7 @@ export class GameScene extends Phaser.Scene {
 
     level.setCollision([2, 8, 16, 22, 24, 44, 48])
     const tileCollisions = [2, 8, 16, 22, 24, 44, 48]
-    level.setCollision(tileCollisions)   
+    level.setCollision(tileCollisions)
     level.layer.data.forEach(function (row: any) {
       row.forEach(function (tile: any) {
         if (tileCollisions.includes(tile.index)) {
@@ -111,7 +172,7 @@ export class GameScene extends Phaser.Scene {
         }
       })
     })
-    
+
     this.entities.forEach(ent => {
       this.physics.add.collider(ent.getSprite(), level)
     })
@@ -137,7 +198,7 @@ export class GameScene extends Phaser.Scene {
       this.cameras.main.fadeOut(1000, 0, 0, 0, this.onFade.bind(this))
     }
 
-    const closest = this.closestBirb()
+    const closest = this.closestEntity('npc').entity as Npc
     if (closest) {
       closest.setShowOutline()
     }
@@ -146,30 +207,36 @@ export class GameScene extends Phaser.Scene {
     this.components.forEach((ent) => ent.update(time, delta))
   }
 
-  public closestBirb (): Npc | void {
+  public closestEntity (type?: string):
+    { entity: PhysicsEntity, index: number } | { entity: null, index: null } {
     if (!this.player) {
       throw new Error('player does not exist')
     }
 
-    const closest = this.NPCs.reduce((closest, npc) => {
-      if (!this.player) {
-        throw new Error('player does not exist')
-      }
+    const entitiesToSearch = this.entities
+      .filter((ent) => (type ? ent.type === type : true))
+    const closest = entitiesToSearch
+      .reduce(({ entity: cumE, index: cumI }, ent, idx) => {
+        if (!this.player) {
+          throw new Error('player does not exist')
+        }
 
-      const closestDistance = Phaser.Math.Distance
-        .BetweenPoints(this.player.getPosition(), closest.getPosition())
+        const closestDistance = Phaser.Math.Distance
+          .BetweenPoints(this.player.getSprite(), cumE.getSprite())
 
-      const npcDistance = Phaser.Math.Distance
-        .BetweenPoints(this.player.getPosition(), npc.getPosition())
+        const entDistance = Phaser.Math.Distance
+          .BetweenPoints(this.player.getSprite(), ent.getSprite())
 
-      return (npcDistance < closestDistance) ? npc : closest
-    })
+        return (entDistance < closestDistance) ?
+          { entity: ent, index: idx } :
+          { entity: cumE, index: cumI }
+      }, { entity: entitiesToSearch[0], index: 0 })
 
     const distance = Phaser.Math.Distance
-      .BetweenPoints(this.player.getPosition(), closest.getPosition())
+      .BetweenPoints(this.player.getSprite(), closest.entity.getSprite())
 
     return distance > MATING_RANGE
-      ? undefined
+      ? { entity: null, index: null }
       : closest
   }
 
