@@ -1,4 +1,7 @@
 import { GameScene, BIRD_SIZE } from '../GameScene'
+import { Traits } from '../types/Traits'
+import { Desires } from '../types/Desires'
+import { generateTraits, generateDesires } from '../lib/Desirability'
 
 const CARD_MARGIN = 15
 
@@ -9,17 +12,28 @@ export class Npc {
   private asset: string
   private sprite?: Phaser.Physics.Arcade.Sprite
   private card?: Phaser.GameObjects.Sprite
+  private cardText?: Phaser.GameObjects.Text
   private heartEmitter?: Phaser.GameObjects.Particles.ParticleEmitter
+  private traits: Traits
+  private desires: Desires
 
   private facing = -1
   private lovin = false
   private showOutline = false
 
-  constructor (scene: GameScene, x: number, y: number, asset: string) {
+  constructor ({ scene, x, y, asset, generationNum = 0 }: {
+    scene: GameScene,
+    x: number,
+    y: number,
+    asset: string,
+    generationNum?: number
+  }) {
     this.scene = scene
     this.x = x
     this.y = y
     this.asset = asset
+    this.traits = generateTraits(generationNum)
+    this.desires = generateDesires(this.traits)
   }
 
   preload () {
@@ -36,6 +50,7 @@ export class Npc {
     this.facing = -1
     this.lovin = false
 
+    // create bird sprite
     this.sprite = this.scene.physics.add.sprite(this.x, this.y, `${this.asset}-npc`)
     this.sprite.setOrigin(0.5)
     this.sprite.setDepth(75)
@@ -45,6 +60,24 @@ export class Npc {
     this.card.setDepth(150)
     this.card.setVisible(false)
     this.card.setScrollFactor(0)
+    const textStyle = {
+      color: 'black',
+      fontSize: '9px',
+      padding: {
+        top: 10,
+        left: 5
+      }
+    }
+    const textCoords = this.card.getTopLeft(undefined, true)
+    console.log('cardTextCoords', textCoords)
+    this.cardText = this.scene.add.text(
+      textCoords.x,
+      textCoords.y,
+      this.cardTextContent(),
+      textStyle
+    )
+    this.cardText.setDepth(151)
+    this.cardText.setScrollFactor(0)
 
     this.scene.anims.create({
       key: `${this.asset}-stand`,
@@ -103,20 +136,37 @@ export class Npc {
     this.showOutline = true
   }
 
+  private cardTextContent (): string {
+    return (
+      `\n
+Beauty: ${this.traits.beauty}\n
+Speed: ${this.traits.speed}\n
+\n
+Wants...\n
+Beauty: >=${this.desires.minBeauty}\n
+Items: ${
+  this.desires.items[0] ?
+  this.desires.items.reduce((acc, cur) => (acc + cur.name + ' '), '') :
+  'none'
+}`
+    )
+  }
+
   update () {
-    if (!this.sprite || !this.card) {
+    if (!this.sprite || !this.card || !this.cardText) {
       return
     }
 
     if (this.showOutline) {
       this.showOutline = false
       this.card.setVisible(true)
+	    this.cardText.setVisible(true)
       this.sprite.anims.play(`${this.asset}-outline`)
     } else {
       this.card.setVisible(false)
+	    this.cardText.setVisible(false)
       this.sprite.anims.play(`${this.asset}-stand`)
     }
-
 
     // Don't move while you're gettin it on
     if (this.lovin) {
@@ -159,7 +209,7 @@ export class Npc {
   }
 
   die () {
-    console.log("npc died")
+    console.log('npc died')
     // unimplemented
   }
 }

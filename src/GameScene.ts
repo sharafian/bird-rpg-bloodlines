@@ -16,12 +16,17 @@ export class GameScene extends Phaser.Scene {
   private player = new Player(this, 2000, 4000)
   private miniCamera = new MinimapCamera(this, 20, 20)
   private NPCs = [
-    new Npc(this, 445, 4000, 'assets/birb7.png'),
-    new Npc(this, 1200, 4000, 'assets/birb7.png')
+    new Npc({ scene: this, x: 445, y: 4000, asset: 'assets/birb7.png' }),
+    new Npc({ scene: this, x: 1200, y: 4000, asset: 'assets/birb7.png' })
   ]
-
   private predators = [
-    new GroundPredator(this, 1400, 4000, 'assets/cat2.png', 64)
+    new GroundPredator({
+      scene: this,
+      x: 1400,
+      y: 4000,
+      asset: 'assets/cat2.png',
+      size: 64
+    })
   ]
 
   private components: Entity[] = [ this.miniCamera ]
@@ -42,7 +47,7 @@ export class GameScene extends Phaser.Scene {
 
     this.load.audio('theme', [
       'assets/audio/bird_trap_wip.mp3'
-  ]);
+    ])
   }
 
   onFade (_: Phaser.Cameras.Scene2D.Camera, progress: number) {

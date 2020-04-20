@@ -18,13 +18,13 @@ export class GroundPredator {
   private facing = -1
   private timeCounter = 0
 
-  constructor (
+  constructor ({ scene, x, y, asset, size }: {
     scene: GameScene,
     x: number,
     y: number,
     asset: string,
     size: number
-  ) {
+  }) {
     this.scene = scene
     this.x = x
     this.y = y
@@ -186,13 +186,13 @@ export class GroundPredator {
       // && this.sprite.body.touching.down
       this.jump()
       return
-    } 
-    
+    }
+
     if (preyPosition.x! > predatorPosition.x! && onGround) {
       this.runRight()
       return
-    } 
-    
+    }
+
     if (preyPosition.x! < predatorPosition.x! && onGround) {
       this.runLeft()
       return
