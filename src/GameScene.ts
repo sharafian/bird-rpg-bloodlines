@@ -3,7 +3,8 @@ import Phaser from 'phaser'
 import { Npc } from './entities/Npc'
 import { Player } from './entities/Player'
 import { GroundPredator } from './entities/GroundPredator'
-import { PhysicsEntity } from './types/Entity'
+import { PhysicsEntity, Entity } from './types/Entity'
+import { MinimapCamera } from './components/MinimapCamera'
 
 export const BIRD_SIZE = 32
 export const MATING_RANGE = 150
@@ -11,16 +12,18 @@ export const MATING_RANGE = 150
 export const TILE_SIZE = 32
 
 export class GameScene extends Phaser.Scene {
-  private player = new Player(this, 20, 20)
+  private player = new Player(this, 2000, 4000)
+  private miniCamera = new MinimapCamera(this, 20, 20)
   private NPCs = [
-    new Npc(this, 445, 425, 'assets/birb6.png'),
-    new Npc(this, 1200, 50, 'assets/birb6.png')
+    new Npc(this, 445, 4000, 'assets/birb7.png'),
+    new Npc(this, 1200, 4000, 'assets/birb7.png')
   ]
 
   private predators = [
-    new GroundPredator(this, 1400, 700, 'assets/cat2.png', 64)
+    new GroundPredator(this, 1400, 4000, 'assets/cat2.png', 64)
   ]
 
+  private components: Entity[] = [ this.miniCamera ]
   private entities: PhysicsEntity[] = [ ...this.NPCs, ...this.predators, this.player ]
   private scheduledFadeout = false
   private map?: Phaser.Tilemaps.Tilemap
@@ -30,10 +33,11 @@ export class GameScene extends Phaser.Scene {
   }
 
   preload () {
-    this.load.tilemapCSV('environment_map', 'assets/environment2.csv')
+    this.load.tilemapCSV('environment_map', 'assets/map3.csv')
     this.load.image('environment_tiles_extruded', 'assets/environment_extruded.png')
 
     this.entities.forEach((ent) => ent.preload())
+    this.components.forEach((ent) => ent.preload())
 
     this.load.audio('theme', [
       'assets/audio/bird_trap_wip.mp3'
@@ -48,10 +52,11 @@ export class GameScene extends Phaser.Scene {
 
   create () {
     this.entities.forEach((ent) => ent.create())
+    this.components.forEach((ent) => ent.create())
     // todo: get this.physics.add.overlap(player, predators) working
 
     this.createEnvironment()
-    
+
     var music = this.sound.add('theme');
 
     music.play()
@@ -102,7 +107,13 @@ export class GameScene extends Phaser.Scene {
       this.cameras.main.fadeOut(3000, 0, 0, 0, this.onFade.bind(this))
     }
 
+    const closest = this.closestBirb()
+    if (closest) {
+      closest.setShowOutline()
+    }
+
     this.entities.forEach((ent) => ent.update(time, delta))
+    this.components.forEach((ent) => ent.update(time, delta))
   }
 
   public closestBirb (): Npc | void {
