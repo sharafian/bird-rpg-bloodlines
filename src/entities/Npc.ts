@@ -12,6 +12,7 @@ export class Npc {
   private asset: string
   private sprite?: Phaser.Physics.Arcade.Sprite
   private card?: Phaser.GameObjects.Sprite
+  private cardText?: Phaser.GameObjects.Text
   private heartEmitter?: Phaser.GameObjects.Particles.ParticleEmitter
   private traits: Traits
   private desires: Desires
@@ -19,17 +20,19 @@ export class Npc {
   private facing = -1
   private lovin = false
 
-  constructor ({ scene, x, y, asset }: {
+  constructor ({ scene, x, y, asset, generationNum = 0 }: {
     scene: GameScene,
     x: number,
     y: number,
-    asset: string
+    asset: string,
+    generationNum?: number
   }) {
     this.scene = scene
     this.x = x
     this.y = y
     this.asset = asset
-
+    this.traits = generateTraits(generationNum)
+    this.desires = generateDesires(this.traits)
   }
 
   preload () {
@@ -46,11 +49,30 @@ export class Npc {
     this.facing = -1
     this.lovin = false
 
+    // create bird sprite
     this.sprite = this.scene.physics.add.sprite(this.x, this.y, `${this.asset}-npc`)
     this.sprite.setDepth(75)
 
+    // create card sprite
     this.card = this.scene.add.sprite(this.x, this.y - BIRD_SIZE / 2, 'card')
     this.card.setDepth(150)
+
+    const cardVector = this.card.getTopLeft(undefined, true)
+    const textStyle = {
+      color: 'black',
+      fontSize: '9px',
+      padding: {
+        top: 10,
+        left: 5
+      }
+    }
+    this.cardText = this.scene.add.text(
+      this.cardTextCoords().x,
+      this.cardTextCoords().y,
+      this.cardTextContent(),
+      textStyle
+    )
+    this.cardText.setDepth(151)
 
     this.scene.anims.create({
       key: `${this.asset}-stand`,
@@ -99,6 +121,23 @@ export class Npc {
     return Phaser.Math.Distance.BetweenPoints(this.scene.getPlayer().getSprite(), this.sprite) < CARD_DISTANCE
   }
 
+  private cardTextCoords (): Phaser.Math.Vector2 {
+    return this.card?.getTopLeft(undefined, true)
+      || new Phaser.Math.Vector2()
+  }
+
+  private cardTextContent (): string {
+    return (
+      `Has...\n
+Beauty: ${this.traits.beauty}\n
+Speed: ${this.traits.speed}\n
+\n
+Wants...\n
+Beauty: >=${this.desires.minBeauty}\n
+Items: ${this.desires.items.reduce((acc, cur) => (acc + cur.name + ' '), '')}`
+    )
+  }
+
   update () {
     if (!this.sprite || !this.card) {
       return
@@ -107,6 +146,8 @@ export class Npc {
     const { x, y } = this.sprite
     this.card?.setPosition(x, y - this.card.height / 2 - BIRD_SIZE / 2)
     this.card?.setVisible(this.showCard())
+    this.cardText?.setPosition(this.cardTextCoords().x, this.cardTextCoords().y)
+    this.cardText?.setVisible(this.showCard())
 
     // Don't move while you're gettin it on
     if (this.lovin) {

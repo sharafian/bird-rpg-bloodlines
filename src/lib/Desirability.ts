@@ -22,7 +22,7 @@ export function generateDesires (traits: Traits): Desires {
     MARGIN_OF_VARIATION + 1
   )
   // float between (0, 1]
-  const normalizedBeautyScore = traits.beauty + beautyVariation / MAX_VALUE
+  const normalizedBeautyScore = (traits.beauty + beautyVariation) / MAX_VALUE
   const numDesiredItems = Math.floor(
     maxDesiredItemsPossible * normalizedBeautyScore
   )
