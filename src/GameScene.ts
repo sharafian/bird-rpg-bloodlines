@@ -53,6 +53,7 @@ export class GameScene extends Phaser.Scene {
   ]
   private scheduledFadeout = false
   private map?: Phaser.Tilemaps.Tilemap
+  private traitsDisplay?: Phaser.GameObjects.Text
 
   constructor () {
     super('game-scene')
@@ -152,6 +153,18 @@ export class GameScene extends Phaser.Scene {
       this.items.push(newItem)
       newItem.create()
     })
+
+    const traits = this.player.getTraits() || { speed: 5, beauty: 5} //yeet
+    this.traitsDisplay = this.add.text(400, 440, `Speed: ${traits.speed}   Beauty: ${traits.beauty}`, {fill: '#000'})
+    this.traitsDisplay.setScrollFactor(0)
+  }
+
+  /** Updates the little line at the bottom that displays player stats */
+  private updateTraitsUI() {
+    if (!this.traitsDisplay) return
+    const traits = this.player.getTraits() 
+    this.traitsDisplay.text = `Speed: ${traits?.speed}   Beauty: ${traits?.beauty}`
+    this.traitsDisplay.updateText()
   }
 
   private createEnvironment () {
