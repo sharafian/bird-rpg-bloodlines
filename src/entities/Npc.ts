@@ -42,9 +42,11 @@ export class Npc {
     this.sprite.setOrigin(0.5)
     this.sprite.setDepth(75)
 
-    this.card = this.scene.add.sprite(this.x, this.y - BIRD_SIZE / 2, 'card')
+    this.card = this.scene.add.sprite(0, 0, 'card')
+    this.card.setPosition(640 - CARD_MARGIN - this.card.width / 2, CARD_MARGIN + this.card.height / 2)
     this.card.setDepth(150)
     this.card.setVisible(false)
+    this.card.setScrollFactor(0)
 
     this.scene.anims.create({
       key: `${this.asset}-stand`,
@@ -110,10 +112,6 @@ export class Npc {
 
     if (this.showOutline) {
       this.showOutline = false
-      this.card.setPosition(
-        this.scene.cameras.main.scrollX + this.scene.cameras.main.width - this.card.width / 2 - CARD_MARGIN,
-        this.scene.cameras.main.scrollY + this.card.height / 2 + CARD_MARGIN
-      )
       this.card.setVisible(true)
       this.sprite.anims.play(`${this.asset}-outline`)
     } else {
