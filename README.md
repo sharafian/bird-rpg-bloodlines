@@ -1,4 +1,5 @@
 # Bird RPG Bloodlines
+[PLAY THE GAEM](https://sharafian.github.io/bird-rpg-bloodlines/)
 > Ludum Dare 46
 
 - [Phaser](https://phaser.io) is the game framework
