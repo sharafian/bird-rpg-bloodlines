@@ -2,7 +2,7 @@ import Phaser from 'phaser'
 import { BIRD_SIZE } from '../GameScene'
 import { EventEmitter } from 'events'
 import { Traits } from '../types/Traits'
-import { Item } from '../types/Item'
+import { ITEM_WEIGHT, Item } from '../types/Item'
 
 export class Player extends EventEmitter {
   public type = 'player'
@@ -281,7 +281,7 @@ export class Player extends EventEmitter {
   }
 
   addItem (item: Item) {
-    if (this.inventory.length >= this.traits.speed) {
+    if (this.inventory.length >= Math.floor(this.traits.speed / ITEM_WEIGHT)) {
       this.emit('drop', this.inventory.shift())
     }
     this.inventory.push(item)

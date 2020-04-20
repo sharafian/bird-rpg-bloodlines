@@ -146,7 +146,7 @@ export class GameScene extends Phaser.Scene {
       const newItem = new ItemEntity(
         this,
         this.player.getPosition().x,
-        this.player.getPosition().y,
+        this.player.getPosition().y - BIRD_SIZE,
         item
       )
       this.items.push(newItem)
@@ -160,7 +160,7 @@ export class GameScene extends Phaser.Scene {
     const level = this.map.createStaticLayer(0, groundTileset, 0, 0)
 
     const tileCollisions = [2, 8, 14, 21, 28, 16, 22, 24, 44, 48]
-    level.setCollision(tileCollisions)   
+    level.setCollision(tileCollisions)
     level.layer.data.forEach(function (row: any) {
       row.forEach(function (tile: any) {
         if (tileCollisions.includes(tile.index)) {
