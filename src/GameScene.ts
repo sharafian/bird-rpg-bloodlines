@@ -95,7 +95,7 @@ export class GameScene extends Phaser.Scene {
       if (!this.player.dead) {
         this.player.die()
         setTimeout(() => {
-          this.scheduleFadeout('main-menu')
+          this.scheduleFadeout('game-over')
         }, 1000)
       }
     })
@@ -159,9 +159,8 @@ export class GameScene extends Phaser.Scene {
     const groundTileset = this.map.addTilesetImage('environment_tiles', 'environment_tiles_extruded', 32, 32, 1, 2)
     const level = this.map.createStaticLayer(0, groundTileset, 0, 0)
 
-    level.setCollision([2, 8, 16, 22, 24, 44, 48])
-    const tileCollisions = [2, 8, 16, 22, 24, 44, 48]
-    level.setCollision(tileCollisions)
+    const tileCollisions = [2, 8, 14, 21, 28, 16, 22, 24, 44, 48]
+    level.setCollision(tileCollisions)   
     level.layer.data.forEach(function (row: any) {
       row.forEach(function (tile: any) {
         if (tileCollisions.includes(tile.index)) {

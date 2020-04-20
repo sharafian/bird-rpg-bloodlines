@@ -3,29 +3,31 @@ import Phaser from 'phaser'
 export class MainMenu extends Phaser.Scene {
   private selection = 0
 
-  private menuY = 250
+  private menuY = 380
   private menuRowHeight = 30
   private menuItems = [
-    { title: 'Start Campaign', scene: 'game-scene' },
-    { title: 'About', scene: 'about-menu' }
+    { title: 'Start', scene: 'game-scene' },
+    { title: 'Controls', scene: 'about-menu' }
   ]
 
   constructor () {
     super('main-menu')
   }
 
+  preload () {
+    this.load.image('title', 'assets/title.png')
+  }
+
   create () {
-    const headerStyle = {
-      color: 'white',
-      fontSize: '36px'
-    }
 
     const itemStyle = {
       color: 'white',
       fontSize: '24px'
     }
 
-    this.add.text(100, 100, 'Bird RPG: Bloodlines', headerStyle)
+
+    // this.add.text(100, 100, 'Bird RPG: Bloodlines', headerStyle)
+    this.add.image(400, 250, 'title')
 
     for (let i = 0; i < this.menuItems.length; ++i) {
       const item = this.menuItems[i]
