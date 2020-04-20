@@ -4,7 +4,6 @@ export interface Entity {
   preload (): void
   create (): void
   update (time: number, delta: number): void
-  getPosition (): void
 }
 
 export interface PhysicsEntity extends Entity {

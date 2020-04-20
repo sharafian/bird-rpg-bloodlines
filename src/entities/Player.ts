@@ -178,7 +178,7 @@ export class Player extends EventEmitter {
           this.sprite.anims.play('fly')
         }
 
-        this.sprite.setVelocityY(-5 * BIRD_SIZE)
+        this.sprite.setVelocityY(-7 * BIRD_SIZE)
       }
 
       this.flapping = true
@@ -197,7 +197,7 @@ export class Player extends EventEmitter {
     }
 
     if (this.isFlying()) {
-      this.sprite.setVelocityX(4 * this.facing * BIRD_SIZE)
+      this.sprite.setVelocityX(6 * this.facing * BIRD_SIZE)
     }
 
     this.sprite.setFlipX(this.facing > 0)
