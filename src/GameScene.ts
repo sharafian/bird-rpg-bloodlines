@@ -59,7 +59,6 @@ export class GameScene extends Phaser.Scene {
   create () {
     this.entities.forEach((ent) => ent.create())
     this.components.forEach((ent) => ent.create())
-    // todo: get this.physics.add.overlap(player, predators) working
 
     this.createEnvironment()
 
@@ -94,14 +93,27 @@ export class GameScene extends Phaser.Scene {
     })
   }
 
-  createEnvironment () {
+  private createEnvironment () {
     this.map = this.make.tilemap({ key: 'environment_map', tileWidth: TILE_SIZE, tileHeight: TILE_SIZE })
     const groundTileset = this.map.addTilesetImage('environment_tiles', 'environment_tiles_extruded', 32, 32, 1, 2)
-    const layer = this.map.createStaticLayer(0, groundTileset, 0, 0)
+    const level = this.map.createStaticLayer(0, groundTileset, 0, 0)
 
-    layer.setCollision([2, 8, 16, 22, 24, 44, 48])
+    level.setCollision([2, 8, 16, 22, 24, 44, 48])
+    const tileCollisions = [2, 8, 16, 22, 24, 44, 48]
+    level.setCollision(tileCollisions)   
+    level.layer.data.forEach(function (row: any) {
+      row.forEach(function (tile: any) {
+        if (tileCollisions.includes(tile.index)) {
+          tile.collideDown = false
+          tile.collideLeft = false
+          tile.collideRight = false
+          tile.collideUp = true
+        }
+      })
+    })
+    
     this.entities.forEach(ent => {
-      this.physics.add.collider(ent.getSprite(), layer)
+      this.physics.add.collider(ent.getSprite(), level)
     })
 
     this.cameras.main.startFollow(this.player.getSprite(), true, 0.1, 0.1)
