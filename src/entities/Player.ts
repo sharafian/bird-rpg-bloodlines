@@ -294,4 +294,9 @@ export class Player extends EventEmitter {
       return this.sprite
     }
   }
+
+  getTraits () {
+    if (!this.traits) return
+    return this.traits
+  }
 }
