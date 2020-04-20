@@ -4,6 +4,7 @@ import { GameScene } from './GameScene'
 import { AboutMenu } from './AboutMenu'
 import { MainMenu } from './MainMenu'
 import { MateScene } from './MateScene'
+import { GameOver } from './GameOver'
 
 const ZOOM = 1
 
@@ -29,7 +30,7 @@ const config = {
       debug: false
     }
   },
-  scene: [ MainMenu, GameScene, AboutMenu, MateScene ]
+  scene: [ MainMenu, GameScene, AboutMenu, MateScene, GameOver ]
 }
 
 const game = new Phaser.Game(config)
