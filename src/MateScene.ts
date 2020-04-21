@@ -7,10 +7,11 @@ import { MAX_VALUE, Traits } from './types/Traits'
 
 export class MateScene extends Phaser.Scene {
   private egg = new Egg(this, 320, 130)
-  private sliders?: RouletteSlider[]
+  private sliders: RouletteSlider[] = []
   private playerTraits?: Traits
   private mateTraits?: Traits
   private components?: Entity[]
+  private newTraits?: Traits
 
   constructor () {
     super('mating-scene')
@@ -65,7 +66,7 @@ export class MateScene extends Phaser.Scene {
 
   onFade (_: Phaser.Cameras.Scene2D.Camera, progress: number) {
     if (progress === 1) {
-      this.scene.start('game-scene')
+      this.scene.start('game-scene', this.newTraits)
     }
   }
 
@@ -78,7 +79,8 @@ export class MateScene extends Phaser.Scene {
 
     const key = this.input.keyboard.addKey('ENTER')
     key.once('up', () => {
-      this.sliders?.forEach(s => s.stop())
+      const [beauty, speed] = this.sliders?.map(s => s.stop())
+      this.newTraits = { beauty, speed }
       text.setText('')
 
       this.egg.hatch()

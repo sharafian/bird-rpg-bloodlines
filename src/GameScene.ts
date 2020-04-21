@@ -11,6 +11,7 @@ import {
 } from './components/MinimapCamera'
 import { randInt, generateTraits } from './lib/Desirability'
 import { ItemTypes } from './types/Item'
+import { Traits } from './types/Traits'
 
 export const BIRD_SIZE = 32
 export const MATING_RANGE = 150
@@ -19,45 +20,68 @@ export const TILE_SIZE = 32
 
 export class GameScene extends Phaser.Scene {
   private nextScene = ''
+  private generationNum = 0
   private nextSceneData?: object
   private player = new Player(this, 2000, 4000, generateTraits(1))
   private miniCamera = new MinimapCamera(this, 20, 20)
-  private NPCs = [
-    new Npc({ scene: this, x: 445, y: 4000, asset: 'assets/birb7.png' }),
-    new Npc({ scene: this, x: 1200, y: 4000, asset: 'assets/birb7.png' })
-  ]
-  // generate 10 random items around the map
-  private items = [...Array(10)].map(() => {
-    return new ItemEntity(
-      this,
-      randInt(0, MAP_WIDTH),
-      4000,
-      ItemTypes[randInt(0, ItemTypes.length)]
-    )
-  })
-  private predators = [
-    new GroundPredator({
-      scene: this,
-      x: 1400,
-      y: 4000,
-      asset: 'assets/cat2.png',
-      size: 64
-    })
-  ]
+  private NPCs: Npc[] = []
+  private items: ItemEntity[] = []
+  private predators: GroundPredator[] = []
 
   private components: Entity[] = [ this.miniCamera ]
-  private entities: PhysicsEntity[] = [
-    ...this.NPCs,
-    ...this.predators,
-    ...this.items,
-    this.player
-  ]
+  private entities: PhysicsEntity[] = []
   private scheduledFadeout = false
   private map?: Phaser.Tilemaps.Tilemap
   private traitsDisplay?: Phaser.GameObjects.Text
 
   constructor () {
     super('game-scene')
+  }
+
+  init (playerTraits: Traits) {
+    this.generationNum++
+    if (!playerTraits?.speed || !playerTraits?.beauty) {
+      playerTraits = generateTraits(this.generationNum)
+    }
+    this.player = new Player(
+      this,
+      2000,
+      4000,
+      playerTraits
+    )
+    this.NPCs = [...Array(10)].map(() =>
+      new Npc({
+        scene: this,
+        x: randInt(0, MAP_WIDTH),
+        y: 4000,
+        asset: 'assets/birb7.png',
+        generationNum: this.generationNum
+      })
+    )
+    // generate 10 random items around the map
+    this.items = [...Array(10)].map(() => {
+      return new ItemEntity(
+        this,
+        randInt(0, MAP_WIDTH),
+        4000,
+        ItemTypes[randInt(0, ItemTypes.length)]
+      )
+    })
+    this.predators = [...Array(5)].map(() =>
+      new GroundPredator({
+        scene: this,
+        x: randInt(0, MAP_WIDTH),
+        y: 4000,
+        asset: 'assets/cat2.png',
+        size: 64
+      })
+    )
+    this.entities = [
+      ...this.NPCs,
+      ...this.predators,
+      ...this.items,
+      this.player
+    ]
   }
 
   preload () {
@@ -166,7 +190,7 @@ export class GameScene extends Phaser.Scene {
   /** Updates the little line at the bottom that displays player stats */
   private updateTraitsUI() {
     if (!this.traitsDisplay) return
-    const traits = this.player.getTraits() 
+    const traits = this.player.getTraits()
     this.traitsDisplay.text = `Speed: ${traits?.speed}   Beauty: ${traits?.beauty}`
     this.traitsDisplay.updateText()
   }
