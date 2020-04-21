@@ -59,7 +59,7 @@ export class GameScene extends Phaser.Scene {
       new Npc({
         scene: this,
         x: randInt(0, MAP_WIDTH),
-        y: 4000,
+        y: randInt(2000, 4000),
         asset: 'assets/birb7.png',
         generationNum: this.generationNum
       })
@@ -69,7 +69,7 @@ export class GameScene extends Phaser.Scene {
       return new ItemEntity(
         this,
         randInt(0, MAP_WIDTH),
-        4000,
+        150 * TILE_SIZE,
         ItemTypes[randInt(0, ItemTypes.length)]
       )
     })
@@ -77,7 +77,7 @@ export class GameScene extends Phaser.Scene {
       new GroundPredator({
         scene: this,
         x: randInt(0, MAP_WIDTH),
-        y: 4000,
+        y: 150 * TILE_SIZE,
         asset: 'assets/cat2.png',
         size: 64
       })
@@ -179,14 +179,17 @@ export class GameScene extends Phaser.Scene {
     })
 
     this.player.on('drop', (item) => {
-      const newItem = new ItemEntity(
-        this,
-        this.player.getPosition().x,
-        this.player.getPosition().y - BIRD_SIZE,
-        item
-      )
-      this.items.push(newItem)
-      newItem.create()
+      if (item) {
+        const newItem = new ItemEntity(
+          this,
+          this.player.getPosition().x,
+          this.player.getPosition().y - BIRD_SIZE,
+          item
+        )
+        console.log(item, newItem)
+        this.items.push(newItem)
+        newItem.create()
+      }
     })
 
     const traits = this.player.getTraits() || { speed: 5, beauty: 5} //yeet
