@@ -161,7 +161,7 @@ export class Player extends EventEmitter {
           this.sprite.y - 10
         )
 
-        this.emit('start_singing')
+        this.emit('start_singing', this.traits, this.inventory)
         emitter.start()
       }
     })

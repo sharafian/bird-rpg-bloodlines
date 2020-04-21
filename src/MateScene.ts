@@ -3,25 +3,64 @@ import Phaser from 'phaser'
 import { RouletteSlider } from './components/RouletteSlider'
 import { Egg } from './entities/Egg'
 import { Entity } from './types/Entity'
+import { MAX_VALUE, Traits } from './types/Traits'
 
 export class MateScene extends Phaser.Scene {
   private egg = new Egg(this, 320, 130)
-  private sliders = [
-    new RouletteSlider(this, 320, 220, 0.3, 0.4),
-    new RouletteSlider(this, 320, 250, 0.5, 0.9)
-  ]
-
-  private components: Entity[] = [
-    ...this.sliders,
-    this.egg
-  ]
+  private sliders?: RouletteSlider[]
+  private playerTraits?: Traits
+  private mateTraits?: Traits
+  private components?: Entity[]
 
   constructor () {
     super('mating-scene')
   }
 
+  init ({ playerTraits, mateTraits }:
+    { playerTraits: Traits, mateTraits: Traits }) {
+    if (playerTraits) {
+      this.playerTraits = playerTraits
+    } else {
+      throw new Error('playerTraits was not passed to mate scene!')
+    }
+    if (mateTraits) {
+      this.mateTraits = mateTraits
+    } else {
+      throw new Error('mateTraits was not passed to mate scene!')
+    }
+
+    const normalizedBeauties = [
+      this.playerTraits.beauty / MAX_VALUE,
+      this.mateTraits.beauty / MAX_VALUE
+    ]
+    const normalizedSpeeds = [
+      this.playerTraits.speed / MAX_VALUE,
+      this.mateTraits.speed / MAX_VALUE
+    ]
+    this.sliders = [
+      new RouletteSlider(
+        this,
+        320,
+        220,
+        Math.min(...normalizedBeauties),
+        Math.max(...normalizedBeauties)
+      ),
+      new RouletteSlider(
+        this,
+        320,
+        250,
+        Math.min(...normalizedSpeeds),
+        Math.max(...normalizedSpeeds)
+      )
+    ]
+    this.components = [
+      ...this.sliders,
+      this.egg
+    ]
+  }
+
   preload () {
-    this.components.forEach(c => c.preload())
+    this.components?.forEach(c => c.preload())
   }
 
   onFade (_: Phaser.Cameras.Scene2D.Camera, progress: number) {
@@ -31,7 +70,7 @@ export class MateScene extends Phaser.Scene {
   }
 
   create () {
-    this.components.forEach(c => c.create())
+    this.components?.forEach(c => c.create())
 
     const text = this.add.text(175, 300, 'Hit ENTER to select attributes', {
       color: 'white'
@@ -39,7 +78,7 @@ export class MateScene extends Phaser.Scene {
 
     const key = this.input.keyboard.addKey('ENTER')
     key.once('up', () => {
-      this.sliders.forEach(s => s.stop())
+      this.sliders?.forEach(s => s.stop())
       text.setText('')
 
       this.egg.hatch()
@@ -54,6 +93,6 @@ export class MateScene extends Phaser.Scene {
   }
 
   update (time: number, delta: number) {
-    this.components.forEach(c => c.update(time, delta))
+    this.components?.forEach(c => c.update(time, delta))
   }
 }

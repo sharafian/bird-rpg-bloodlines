@@ -19,6 +19,7 @@ export const TILE_SIZE = 32
 
 export class GameScene extends Phaser.Scene {
   private nextScene = ''
+  private nextSceneData?: object
   private player = new Player(this, 2000, 4000, generateTraits(1))
   private miniCamera = new MinimapCamera(this, 20, 20)
   private NPCs = [
@@ -72,7 +73,7 @@ export class GameScene extends Phaser.Scene {
 
   onFade (_: Phaser.Cameras.Scene2D.Camera, progress: number) {
     if (progress === 1) {
-      this.scene.start(this.nextScene)
+      this.scene.start(this.nextScene, this.nextSceneData)
     }
   }
 
@@ -100,14 +101,17 @@ export class GameScene extends Phaser.Scene {
       }
     })
 
-    this.player.on('start_singing', () => {
+    this.player.on('start_singing', (playerTraits, playerInventory) => {
       const mate = this.closestEntity('npc').entity as Npc
 
-      if (mate) {
+      if (mate && mate.desiresFulfilled(playerTraits, playerInventory)) {
         this.player.startLovin()
         mate.startLovin()
         setTimeout(() => {
-          this.scheduleFadeout('mating-scene')
+          this.scheduleFadeout(
+            'mating-scene',
+            { playerTraits, mateTraits: mate.traits }
+          )
         }, 1000)
       }
     })
@@ -181,8 +185,9 @@ export class GameScene extends Phaser.Scene {
     this.cameras.main.setBackgroundColor('#a6dbed')
   }
 
-  private scheduleFadeout (nextScene: string) {
+  private scheduleFadeout (nextScene: string, data?: object) {
     this.nextScene = nextScene
+    this.nextSceneData = data
     this.scheduledFadeout = true
   }
 
