@@ -8,9 +8,20 @@ export class GameOver extends Phaser.Scene {
 
   preload () {
       this.load.image('game-over', 'assets/gameover.png')
+
+      this.load.audio('loss', [
+        'assets/audio/bird_loss.mp3'
+      ])
   }
 
   create () {
+    const music = this.sound.add('loss')
+
+    music.play()
+    this.events.on('shutdown', () => {
+      music.stop()
+    })
+    
 
     this.add.image(320, 240, 'game-over')
 

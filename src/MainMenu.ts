@@ -16,6 +16,9 @@ export class MainMenu extends Phaser.Scene {
 
   preload () {
     this.load.image('title', 'assets/title.png')
+    this.load.audio('menu', [
+      'assets/audio/bird_rave.mp3'
+    ])
   }
 
   create () {
@@ -25,6 +28,12 @@ export class MainMenu extends Phaser.Scene {
       fontSize: '24px'
     }
 
+    const music = this.sound.add('menu')
+
+    music.play()
+    this.events.on('shutdown', () => {
+      music.stop()
+    })
 
     // this.add.text(100, 100, 'Bird RPG: Bloodlines', headerStyle)
     this.add.image(400, 250, 'title')

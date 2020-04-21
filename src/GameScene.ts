@@ -68,7 +68,7 @@ export class GameScene extends Phaser.Scene {
     this.components.forEach((ent) => ent.preload())
 
     this.load.audio('theme', [
-      'assets/audio/bird_trap_wip.mp3'
+      'assets/audio/bird_trap.mp3'
     ])
   }
 
