@@ -183,7 +183,7 @@ export class GameScene extends Phaser.Scene {
     })
 
     const traits = this.player.getTraits() || { speed: 5, beauty: 5} //yeet
-    this.traitsDisplay = this.add.text(400, 440, `Speed: ${traits.speed}   Beauty: ${traits.beauty}`, {fill: '#000'})
+    this.traitsDisplay = this.add.text(400, 440, `Strength: ${traits.speed}   Beauty: ${traits.beauty}`, {fill: '#000'})
     this.traitsDisplay.setScrollFactor(0)
   }
 

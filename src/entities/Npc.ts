@@ -142,7 +142,7 @@ export class Npc {
     return (
       `\n
 Beauty: ${this.traits.beauty}\n
-Speed: ${this.traits.speed}\n
+Strength: ${this.traits.speed}\n
 \n
 Wants...\n
 Beauty: >=${this.desires.minBeauty}\n
