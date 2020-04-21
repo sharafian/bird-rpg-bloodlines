@@ -1,4 +1,5 @@
 import Phaser from 'phaser'
+import { MAX_VALUE } from '../types/Traits'
 
 export class RouletteSlider {
   private selectangle?: Phaser.GameObjects.GameObject
@@ -73,5 +74,6 @@ export class RouletteSlider {
 
   stop () {
     this.stopped = true
+    return Math.floor(((this.getBody().x - this.x) / this.width) * MAX_VALUE)
   }
 }
