@@ -66,7 +66,7 @@ export class MateScene extends Phaser.Scene {
 
   onFade (_: Phaser.Cameras.Scene2D.Camera, progress: number) {
     if (progress === 1) {
-      this.scene.start('game-scene', this.newTraits)
+      this.scene.start('game-scene', { new: false, ...this.newTraits })
     }
   }
 

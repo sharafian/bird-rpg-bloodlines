@@ -49,6 +49,7 @@ export class Player extends EventEmitter {
     this.lovin = false
     this.facing = 1
     this.dead = false
+    this.inventory = []
 
     const noteParticles = this.scene.add.particles('notes')
     noteParticles.setDepth(100)
@@ -298,5 +299,9 @@ export class Player extends EventEmitter {
   getTraits () {
     if (!this.traits) return
     return this.traits
+  }
+
+  getInventory () {
+    return this.inventory
   }
 }

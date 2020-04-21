@@ -22,7 +22,7 @@ export class GameScene extends Phaser.Scene {
   private nextScene = ''
   private generationNum = 0
   private nextSceneData?: object
-  private player = new Player(this, 2000, 4000, generateTraits(1))
+  private player = new Player(this, 2000, 2000, generateTraits(1))
   private miniCamera = new MinimapCamera(this, 20, 20)
   private NPCs: Npc[] = []
   private items: ItemEntity[] = []
@@ -33,13 +33,19 @@ export class GameScene extends Phaser.Scene {
   private scheduledFadeout = false
   private map?: Phaser.Tilemaps.Tilemap
   private traitsDisplay?: Phaser.GameObjects.Text
+  private inventoryDisplay?: Phaser.GameObjects.Text
 
   constructor () {
     super('game-scene')
   }
 
-  init (playerTraits: Traits) {
-    this.generationNum++
+  init (playerTraits: any) {
+    if (playerTraits.new) {
+      this.generationNum = 0
+    } else {
+      this.generationNum++
+    }
+
     if (!playerTraits?.speed || !playerTraits?.beauty) {
       playerTraits = generateTraits(this.generationNum)
     }
@@ -53,7 +59,7 @@ export class GameScene extends Phaser.Scene {
       new Npc({
         scene: this,
         x: randInt(0, MAP_WIDTH),
-        y: 4000,
+        y: randInt(2000, 4000),
         asset: 'assets/birb7.png',
         generationNum: this.generationNum
       })
@@ -63,7 +69,7 @@ export class GameScene extends Phaser.Scene {
       return new ItemEntity(
         this,
         randInt(0, MAP_WIDTH),
-        4000,
+        150 * TILE_SIZE,
         ItemTypes[randInt(0, ItemTypes.length)]
       )
     })
@@ -71,7 +77,7 @@ export class GameScene extends Phaser.Scene {
       new GroundPredator({
         scene: this,
         x: randInt(0, MAP_WIDTH),
-        y: 4000,
+        y: 150 * TILE_SIZE,
         asset: 'assets/cat2.png',
         size: 64
       })
@@ -151,6 +157,7 @@ export class GameScene extends Phaser.Scene {
       if (item) {
         item.getSprite().setVisible(false)
         this.player.addItem(item.itemType)
+        this.updateTraitsUI()
         // we remove the item from this.items
         this.items = this.items.filter((_, idx) => idx !== itemIndex)
         // we also need to remove the item from this.entities
@@ -172,27 +179,36 @@ export class GameScene extends Phaser.Scene {
     })
 
     this.player.on('drop', (item) => {
-      const newItem = new ItemEntity(
-        this,
-        this.player.getPosition().x,
-        this.player.getPosition().y - BIRD_SIZE,
-        item
-      )
-      this.items.push(newItem)
-      newItem.create()
+      if (item) {
+        const newItem = new ItemEntity(
+          this,
+          this.player.getPosition().x,
+          this.player.getPosition().y - BIRD_SIZE,
+          item
+        )
+        console.log(item, newItem)
+        this.items.push(newItem)
+        newItem.create()
+      }
     })
 
     const traits = this.player.getTraits() || { speed: 5, beauty: 5} //yeet
-    this.traitsDisplay = this.add.text(400, 440, `Speed: ${traits.speed}   Beauty: ${traits.beauty}`, {fill: '#000'})
+    const inventory = this.player.getInventory()
+    this.traitsDisplay = this.add.text(400, 440, `Strength: ${traits.speed}   Beauty: ${traits.beauty}`, {fill: '#000'})
+    this.inventoryDisplay = this.add.text(10, 440, inventory.map(i => i.name).join(', '), { fill: '#000' })
     this.traitsDisplay.setScrollFactor(0)
+    this.inventoryDisplay.setScrollFactor(0)
   }
 
   /** Updates the little line at the bottom that displays player stats */
   private updateTraitsUI() {
-    if (!this.traitsDisplay) return
-    const traits = this.player.getTraits()
+    if (!this.traitsDisplay || !this.inventoryDisplay) return
+    const traits = this.player.getTraits() 
+    const inventory = this.player.getInventory()
     this.traitsDisplay.text = `Speed: ${traits?.speed}   Beauty: ${traits?.beauty}`
+    this.inventoryDisplay.text = inventory.map(i => i.name).join(', ')
     this.traitsDisplay.updateText()
+    this.inventoryDisplay.updateText()
   }
 
   private createEnvironment () {

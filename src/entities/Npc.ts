@@ -9,8 +9,8 @@ const CARD_MARGIN = 15
 export class Npc {
   public type = 'npc'
   private scene: GameScene
-  private x: number
-  private y: number
+  public x: number
+  public y: number
   private asset: string
   private sprite?: Phaser.Physics.Arcade.Sprite
   private card?: Phaser.GameObjects.Sprite
@@ -22,6 +22,7 @@ export class Npc {
   private facing = -1
   private lovin = false
   private showOutline = false
+  public generation = 1
 
   constructor ({ scene, x, y, asset, generationNum = 0 }: {
     scene: GameScene,
@@ -34,6 +35,7 @@ export class Npc {
     this.x = x
     this.y = y
     this.asset = asset
+    this.generation = 1
     this.traits = generateTraits(generationNum)
     this.desires = generateDesires(this.traits)
   }
@@ -51,11 +53,14 @@ export class Npc {
   create () {
     this.facing = -1
     this.lovin = false
+    this.traits = generateTraits(this.generation)
+    this.desires = generateDesires(this.traits)
 
     // create bird sprite
     this.sprite = this.scene.physics.add.sprite(this.x, this.y, `${this.asset}-npc`)
     this.sprite.setOrigin(0.5)
     this.sprite.setDepth(75)
+    this.sprite.setMaxVelocity(1000, 250)
 
     this.card = this.scene.add.sprite(0, 0, 'card')
     this.card.setPosition(640 - CARD_MARGIN - this.card.width / 2, CARD_MARGIN + this.card.height / 2)
@@ -71,7 +76,6 @@ export class Npc {
       }
     }
     const textCoords = this.card.getTopLeft(undefined, true)
-    console.log('cardTextCoords', textCoords)
     this.cardText = this.scene.add.text(
       textCoords.x,
       textCoords.y,
@@ -142,7 +146,7 @@ export class Npc {
     return (
       `\n
 Beauty: ${this.traits.beauty}\n
-Speed: ${this.traits.speed}\n
+Strength: ${this.traits.speed}\n
 \n
 Wants...\n
 Beauty: >=${this.desires.minBeauty}\n
