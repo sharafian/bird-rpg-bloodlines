@@ -1,20 +1,22 @@
 import Phaser from 'phaser'
 
 const AboutText = `
-You are a horny finch.
+You are a finch and you need
+to find a mate!
 
 Use the ARROW KEYS to fly around
 
-Press Z to woo your lady
-
-Hit ENTER to return to the 
-main menu
+Press Z to woo your lady.
+Press X to pick up items.
 
 Find mates to have better 
 stats in each generation
 
 Keep your bloodline alive 
 as long as possible!
+
+Hit ENTER to return to the 
+main menu
 `
 
 export class AboutMenu extends Phaser.Scene {
