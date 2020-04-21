@@ -1,5 +1,6 @@
 import { GameScene, BIRD_SIZE } from '../GameScene'
 import { Traits } from '../types/Traits'
+import { Item } from '../types/Item'
 import { Desires } from '../types/Desires'
 import { generateTraits, generateDesires } from '../lib/Desirability'
 
@@ -15,7 +16,7 @@ export class Npc {
   private card?: Phaser.GameObjects.Sprite
   private cardText?: Phaser.GameObjects.Text
   private heartEmitter?: Phaser.GameObjects.Particles.ParticleEmitter
-  private traits: Traits
+  public traits: Traits
   private desires: Desires
 
   private facing = -1
@@ -207,6 +208,20 @@ Items: ${
     }
 
     return this.sprite
+  }
+
+  desiresFulfilled (traits: Traits, inventory: Item[]): boolean {
+    const fulfilsBeauty = traits.beauty >= this.desires.minBeauty
+    const inventoryStr = inventory.map(_ => _.name)
+    for (const item of this.desires.items.map(_ => _.name)) {
+      const i = inventoryStr.indexOf(item)
+      if (i === -1) {
+        return false
+      } else {
+        inventoryStr.splice(i, 1)
+      }
+    }
+    return true
   }
 
   die () {
