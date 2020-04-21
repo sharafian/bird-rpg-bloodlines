@@ -70,7 +70,7 @@ export class MainMenu extends Phaser.Scene {
     const enterKey = this.input.keyboard.addKey('ENTER')
 
     enterKey.on('up', () => {
-      this.scene.start(this.menuItems[this.selection].scene)
+      this.scene.start(this.menuItems[this.selection].scene, { new: true })
     })
 
     this.events.on('shutdown', () => {
