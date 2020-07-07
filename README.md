@@ -1,7 +1,7 @@
 # Bird RPG Bloodlines
-[PLAY THE GAEM](https://sharafian.github.io/bird-rpg-bloodlines/)
+We built this in a weekend for Ludum Dare 46
 
-> Ludum Dare 46
+[PLAY THE GAEM](https://sharafian.github.io/bird-rpg-bloodlines/)
 
 ![How to play](screenshots/howToPlay.png)
 
