@@ -5,9 +5,7 @@ We built this in a weekend for Ludum Dare 46
 
 ![How to play](screenshots/howToPlay.png)
 
-# Credits
-[Ben](https://twitter.com/sharafian_), [Jasmine](https://twitter.com/lacunahag), and [Nathan](https://nathanielbaum.com/) coded this.
-
+# Art Credits
 TypeTenTC did the pixel art.
 
 DJ Lurinym did the music (and the cat sprite).
